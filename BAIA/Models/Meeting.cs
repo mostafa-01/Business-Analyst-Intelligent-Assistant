@@ -11,7 +11,7 @@ namespace BAIA.Models
         public int MeetingID { get; set; }
 
         [Required]
-        public List<string> MeetingPersonnel { get; set; }
+        public string MeetingPersonnel { get; set; }
 
         [Required]
         public string MeetingDescription { get; set; }
@@ -21,7 +21,6 @@ namespace BAIA.Models
 
         [Required]
         public string ASR_Text { get; set; }
-
 
         public virtual Project Project { get; set; }
 

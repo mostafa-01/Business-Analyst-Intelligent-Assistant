@@ -9,7 +9,7 @@ namespace BAIA.Models
     public class Project
     {
         public int ProjectID { get; set; }
-
+        
         [Required]
         public string ProjectTitle { get; set; }
 
@@ -21,8 +21,7 @@ namespace BAIA.Models
 
         [Required]
         public string OrganizationName { get; set; }
-
-
+        
         public virtual IList<Meeting> Meetings { get; set; }
 
         public virtual User User { get; set; }

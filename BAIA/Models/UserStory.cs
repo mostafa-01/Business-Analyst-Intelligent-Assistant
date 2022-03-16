@@ -14,7 +14,7 @@ namespace BAIA.Models
         [Required]
         public string UserStoryTitle { get; set; }
 
-        public List<string> Preconditions { get; set; }
+        public string Preconditions { get; set; }
 
         public string AcceptanceCriteria { get; set; }
 
@@ -26,7 +26,6 @@ namespace BAIA.Models
         [DefaultValue(false)]
         public bool UsetStoryVerified { get; set; }
 
-
-        public virtual Project Project { get; set; }
+        public virtual Meeting Meeting { get; set; }
     }
 }

@@ -16,6 +16,7 @@ namespace BAIA.Data
         public DbSet<Meeting> Meetings { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Service> Services { get; set; }
+        public DbSet<ServiceDetail> ServiceDetails { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserStory> UserStories { get; set; }
 
