@@ -18,10 +18,7 @@ namespace BAIA
         {
             var host = CreateHostBuilder(args).Build();
 
-            /*User user = new User { Name = "Andrew", CompanyName = "Cross Workers", Email = "andrew@gmail.com", Password = "andrew12345", PhoneNumber = 0100100 };
-            BAIA_DB_Context db = new BAIA_DB_Context();
-            db.Users.Add(user);
-            db.SaveChanges();*/
+            
 
             CreateDbIfNotExists(host);
 

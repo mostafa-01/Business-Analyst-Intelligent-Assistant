@@ -1,6 +1,6 @@
 {
-  "short_name": "BAIA",
-  "name": "BAIA",
+  "short_name": "my_new_app",
+  "name": "my_new_app",
   "icons": [
     {
       "src": "favicon.ico",
