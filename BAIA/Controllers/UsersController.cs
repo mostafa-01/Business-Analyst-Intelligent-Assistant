@@ -32,7 +32,7 @@ namespace BAIA.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserID == id);
 
             if (user == null)
             {
@@ -88,7 +88,7 @@ namespace BAIA.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserID == id);
             if (user == null)
             {
                 return NotFound();
