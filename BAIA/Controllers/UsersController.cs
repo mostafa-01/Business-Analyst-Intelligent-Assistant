@@ -48,7 +48,7 @@ namespace BAIA.Controllers
 
             if (user == null)
             {
-                return NotFound();
+                return NoContent();
             }
 
             return user;
