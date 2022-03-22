@@ -41,7 +41,7 @@ namespace BAIA.Controllers
 
             return user;
         }
-        [HttpGet("{email,password}")]
+        [HttpGet("{email}/{password}")]
         public async Task<ActionResult<User>> GetUser(string email , string password)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email && x.Password == password);
