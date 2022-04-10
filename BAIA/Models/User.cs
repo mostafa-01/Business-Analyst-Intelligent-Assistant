@@ -23,7 +23,7 @@ namespace BAIA.Models
         public string CompanyName { get; set; }
 
         [Required]
-        public int PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }
 
 
         public virtual IList<Project> Projects { get; set; }

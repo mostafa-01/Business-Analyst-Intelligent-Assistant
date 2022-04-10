@@ -10,7 +10,7 @@ namespace BAIA.Data
     {
         public static void Initialize(BAIA_DB_Context context)
         {
-
+            context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
             if (context.Users.Any())
             {
@@ -18,12 +18,12 @@ namespace BAIA.Data
             }
             var users = new User[]
             {
-                new User{Name="Youssef",CompanyName="Cross Workers",Email="youssef@gmail.com",Password="youssef12345",PhoneNumber=0100100},
-                new User{Name="Mostafa",CompanyName="Valeo",Email="mostafa@gmail.com",Password="mostafa12345",PhoneNumber=0100200},
-                new User{Name="Nada",CompanyName="HSBC",Email="nada@gmail.com",Password="nada12345",PhoneNumber=0100300},
-                new User{Name="Mariam",CompanyName="CIB",Email="mariam@gmail.com",Password="mariam12345",PhoneNumber=0100400},
-                new User{Name="Batoul",CompanyName="QNB",Email="batoul@gmail.com",Password="batoul12345",PhoneNumber=0100500},
-                new User{Name="Nour",CompanyName="Anghami",Email="nour@gmail.com",Password="nour12345",PhoneNumber=0100600},
+                new User{Name="Youssef",CompanyName="Cross Workers",Email="youssef@gmail.com",Password="youssef12345",PhoneNumber="0100100"},
+                new User{Name="Mostafa",CompanyName="Valeo",Email="mostafa@gmail.com",Password="mostafa12345",PhoneNumber="0100200"},
+                new User{Name="Nada",CompanyName="HSBC",Email="nada@gmail.com",Password="nada12345",PhoneNumber="0100300"},
+                new User{Name="Mariam",CompanyName="CIB",Email="mariam@gmail.com",Password="mariam12345",PhoneNumber="0100400"},
+                new User{Name="Batoul",CompanyName="QNB",Email="batoul@gmail.com",Password="batoul12345",PhoneNumber="0100500"},
+                new User{Name="Nour",CompanyName="Anghami",Email="nour@gmail.com",Password="nour12345",PhoneNumber="0100600"},
             };
             foreach (User u in users)
             {
