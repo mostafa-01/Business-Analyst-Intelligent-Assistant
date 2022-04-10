@@ -42,8 +42,50 @@ namespace BAIA.Data
                 context.Projects.Add(p);
             }
             context.SaveChanges();
+            var meetings = new Meeting[]
+            {
+                new Meeting{MeetingTitle="First Meeting", MeetingDescription="In this meeting we talked about.....",
+                    MeetingPersonnel="Ahmed Elsayed, Mohamed Ahmed",AudioReference="D:\\",ASR_Text="Speaker A: Good afternoon, it's a pleasure to meet with you today sirSpeaker B: the pleasure is mine",
+                    Project=projects[0] }
+            };
+            foreach (Meeting m in meetings)
+            {
+                context.Meetings.Add(m);
+            }
+            context.SaveChanges();
+            var services = new Service[]
+            {
+                new Service{ServiceTitle="Login Page",Meeting=meetings[0]}
+            };
+            foreach (Service s in services)
+            {
+                context.Services.Add(s);
+            }
+            context.SaveChanges();
+            var serviceDetails = new ServiceDetail[]
+            {
+                new ServiceDetail{ServiceDetailString="login page should be the.....",Service=services[0]},
+                new ServiceDetail{ServiceDetailString="It should provide two text.....",Service=services[0]},
+                new ServiceDetail{ServiceDetailString="It should have a command.....",Service=services[0]}
+            };
+            foreach (ServiceDetail sd in serviceDetails)
+            {
+                context.ServiceDetails.Add(sd);
+            }
+            context.SaveChanges();
+            var userStories = new UserStory[]
+            {
+                new UserStory{UserStoryTitle="First User Story",UserStoryDescription="As a supply planner, I need the ability to plan dependent forecasted items as independent SKUs, so that I can include those items in my MSP / distribution requirements plan.I will know it’s achieved when I can pull in demand forecast of a parent SKU, identify the bill of materials, andcreate a sourcing plan for dependent SKUs.....",
+                    Meeting=meetings[0] }
+            };
+            foreach (UserStory us in userStories)
+            {
+                context.UserStories.Add(us);
+            }
+            context.SaveChanges();
 
-            
+
+
         }
     }
 }
