@@ -14,6 +14,9 @@ namespace BAIA.Models
         [Required]
         public string UserStoryTitle { get; set; }
 
+        [Required]
+        public string UserStoryDescription { get; set; }
+
         public string Preconditions { get; set; }
 
         public string AcceptanceCriteria { get; set; }

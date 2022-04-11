@@ -11,10 +11,13 @@ namespace BAIA.Models
         public int MeetingID { get; set; }
 
         [Required]
-        public string MeetingPersonnel { get; set; }
+        public string MeetingTitle { get; set; }
 
         [Required]
         public string MeetingDescription { get; set; }
+
+        [Required]
+        public string MeetingPersonnel { get; set; }
 
         [Required]
         public string AudioReference { get; set; }

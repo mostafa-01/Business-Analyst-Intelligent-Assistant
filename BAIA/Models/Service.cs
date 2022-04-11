@@ -14,8 +14,7 @@ namespace BAIA.Models
         [Required]
         public string ServiceTitle { get; set; }
 
-        [Required]
-        public   virtual IList<ServiceDetail> ServiceDetails { get; set; }
+        public virtual IList<ServiceDetail> ServiceDetails { get; set; }
 
         [DefaultValue(false)]
         public bool ServiceVerified { get; set; }
