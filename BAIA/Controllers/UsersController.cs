@@ -21,6 +21,10 @@ namespace BAIA.Controllers
             _context = context;
         }
 
+        //-----------------------------------------------------------------------//
+
+        // READ
+
         // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
@@ -41,6 +45,8 @@ namespace BAIA.Controllers
 
             return user;
         }
+
+        // GET: api/Users/youssef@gmail.com/youssef12345
         [HttpGet("{email}/{password}")]
         public async Task<ActionResult<User>> GetUser(string email , string password)
         {
@@ -54,6 +60,10 @@ namespace BAIA.Controllers
             return user;
         }
 
+        //-----------------------------------------------------------------------//
+
+        // UPDATE
+
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -64,7 +74,7 @@ namespace BAIA.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(user).State = EntityState.Modified; // Used to detect changes and apply it if found
 
             try
             {
@@ -85,6 +95,10 @@ namespace BAIA.Controllers
             return NoContent();
         }
 
+        //-----------------------------------------------------------------------//
+
+        // CREATE
+
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -93,8 +107,12 @@ namespace BAIA.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.UserID }, user);
+            return CreatedAtAction("GetUser", new { id = user.UserID }, user); // Return new User location (api/Users/idOfNewUser) in the header
         }
+
+        //-----------------------------------------------------------------------//
+
+        // DELETE
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
@@ -111,6 +129,9 @@ namespace BAIA.Controllers
 
             return NoContent();
         }
+
+        //-----------------------------------------------------------------------//
+
 
         private bool UserExists(int id)
         {
