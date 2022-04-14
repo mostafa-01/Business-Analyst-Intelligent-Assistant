@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BAIA.Data;
 using BAIA.Models;
+using Microsoft.AspNetCore.Cors;
 
 namespace BAIA.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors]
     public class UsersController : ControllerBase
     {
         private readonly BAIA_DB_Context _context;
@@ -24,6 +26,7 @@ namespace BAIA.Controllers
         //-----------------------------------------------------------------------//
 
         // READ
+      
 
         // GET: api/Users
         [HttpGet]
@@ -101,7 +104,9 @@ namespace BAIA.Controllers
 
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPost]
+        [EnableCors]
         public async Task<ActionResult<User>> PostUser(User user)
         {
             _context.Users.Add(user);

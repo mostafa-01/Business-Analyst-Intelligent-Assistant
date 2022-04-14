@@ -10,19 +10,19 @@ namespace BAIA.Models
     {
         public int UserID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "email is required")]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "pass is required")]
         public string Password { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "cn is required")]
         public string CompanyName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "pn is required")]
         public string PhoneNumber { get; set; }
 
 
