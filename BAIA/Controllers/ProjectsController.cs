@@ -31,6 +31,35 @@ namespace BAIA.Controllers
             return await _context.Projects.ToListAsync();
         }
 
+        //Get: api/Projects/GetMeetingTitles/5
+        [Route("api/Projects/GetMeetingTitles")]
+        [HttpGet("GetMeetingTitles/{id}")]
+        public async Task<ActionResult<List<string>>> GetMeetingTitles(int id)
+        {
+            var project = new Project();
+            project = await _context.Projects.FirstOrDefaultAsync(x => x.ProjectID == id);
+            if (project == null)
+                return NoContent();
+            else
+            {
+                try {
+                    
+                    List<string> MeetingTitles = new List<string>();
+                    var meetings = project.Meetings.ToList();
+                    foreach (Meeting meeting in meetings)
+                    {
+                         MeetingTitles.Add(meeting.MeetingTitle);
+                    }
+                    return MeetingTitles;
+
+                }catch(Exception e)
+                {
+                    Console.Out.WriteLine(e.ToString());
+                    return StatusCode(500);
+                }
+            }
+        }
+
         // GET: api/Projects/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Project>> GetProject(int id)
@@ -80,12 +109,26 @@ namespace BAIA.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [EnableCors]
-        public async Task<ActionResult<Project>> PostProject(Project project)
+        public async Task<ActionResult<Project>> PostProject([FromBody] AddProjectModel model)
         {
-            _context.Projects.Add(project);
-            await _context.SaveChangesAsync();
+            if(_context.Projects.FirstOrDefault(x => x.ProjectTitle == model.project.ProjectTitle) != null)
+            {
+                return BadRequest();
+            }
+            try
+            {
+                model.project.User = _context.Users.FirstOrDefault(x => x.UserID == model.UserID);
+                _context.Projects.Add(model.project);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetProject", new { id = project.ProjectID }, project);
+            }
+            catch (Exception e)
+            {
+                Console.Out.WriteLine(e.ToString());
+                return StatusCode(500);
+            }
+
+            return CreatedAtAction("GetProject", new { id = model.project.ProjectID }, model.project);
         }
 
         // DELETE: api/Projects/5

@@ -31,6 +31,41 @@ namespace BAIA.Controllers
             return await _context.Meetings.ToListAsync();
         }
 
+        //Get: api/Projects/GetMeetingAsIs/5
+        [Route("api/Projects/GetMeetingAsIs")]
+        [HttpGet("GetMeetingAsIs/{id}")]
+        public async Task<ActionResult<List<string>>> GetMeetingAsIs(int id)
+        {
+            var meeting = new Meeting();
+            meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == id);
+            if (meeting == null)
+                return NoContent();
+            else
+            {
+                try
+                {
+
+                    List<string> AsIs = new List<string>();
+                    var Services = meeting.Services.ToList();
+                    foreach (Service service in Services)
+                    {
+                        AsIs.Add(service.ServiceTitle + ":");
+                        foreach(var DetailLine in service.ServiceDetails)
+                        {
+                            AsIs.Add(DetailLine.ServiceDetailString + "\n");
+                        }
+                    }
+                    return AsIs;
+
+                }
+                catch (Exception e)
+                {
+                    Console.Out.WriteLine(e.ToString());
+                    return StatusCode(500);
+                }
+            }
+        }
+
         // GET: api/Meetings/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Meeting>> GetMeeting(int id)
@@ -82,6 +117,7 @@ namespace BAIA.Controllers
         [EnableCors]
         public async Task<ActionResult<Meeting>> PostMeeting(Meeting meeting)
         {
+            
             _context.Meetings.Add(meeting);
             await _context.SaveChangesAsync();
 

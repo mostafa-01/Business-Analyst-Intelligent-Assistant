@@ -140,6 +140,10 @@ namespace BAIA.Controllers
         [EnableCors]
         public async Task<ActionResult<User>> PostUser(User user)
         {
+            if(_context.Users.FirstOrDefault(x => x.Email == user.Email) != null)
+            {
+                return BadRequest();
+            }
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
