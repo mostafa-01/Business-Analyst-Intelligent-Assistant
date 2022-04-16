@@ -37,7 +37,7 @@ namespace BAIA.Controllers
         public async Task<ActionResult<List<string>>> GetMeetingAsIs(int id)
         {
             var meeting = new Meeting();
-            meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == id);
+            meeting = await _context.Meetings.Include(p => p.Services).FirstOrDefaultAsync(x => x.MeetingID == id);
             if (meeting == null)
                 return NoContent();
             else
@@ -50,7 +50,11 @@ namespace BAIA.Controllers
                     foreach (Service service in Services)
                     {
                         AsIs.Add(service.ServiceTitle + ":");
-                        foreach(var DetailLine in service.ServiceDetails)
+                        foreach(var DetailLine in _context.Services
+                            .Include(z => z.ServiceDetails)
+                            .FirstOrDefault(a => a.ServiceID == service.ServiceID)
+                            .ServiceDetails
+                            .ToList())
                         {
                             AsIs.Add(DetailLine.ServiceDetailString + "\n");
                         }

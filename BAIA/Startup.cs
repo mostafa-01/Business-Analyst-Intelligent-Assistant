@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Text.Json.Serialization;
 
 namespace BAIA
 {
@@ -22,6 +23,9 @@ namespace BAIA
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers()
+           .AddJsonOptions(o => o.JsonSerializerOptions
+               .ReferenceHandler = ReferenceHandler.Preserve);
             services.AddCors(option =>
             {
                 option.AddDefaultPolicy(builder =>

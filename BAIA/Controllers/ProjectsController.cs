@@ -28,7 +28,7 @@ namespace BAIA.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Project>>> GetProjects()
         {
-            return await _context.Projects.ToListAsync();
+            return await _context.Projects.Include(p => p.User).ToListAsync();
         }
 
         //Get: api/Projects/GetMeetingTitles/5
@@ -37,7 +37,7 @@ namespace BAIA.Controllers
         public async Task<ActionResult<List<string>>> GetMeetingTitles(int id)
         {
             var project = new Project();
-            project = await _context.Projects.FirstOrDefaultAsync(x => x.ProjectID == id);
+            project = await _context.Projects.Include(p => p.Meetings).FirstOrDefaultAsync(x => x.ProjectID == id);
             if (project == null)
                 return NoContent();
             else

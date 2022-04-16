@@ -37,7 +37,7 @@ namespace BAIA.Controllers
         {
 
             var User = new User();
-            User = await _context.Users.FirstOrDefaultAsync(x => x.UserID == id);
+            User = await _context.Users.Include(p => p.Projects).FirstOrDefaultAsync(x => x.UserID == id);
             if (User == null)
                 return NoContent();
             else
