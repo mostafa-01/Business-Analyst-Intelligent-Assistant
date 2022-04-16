@@ -26,7 +26,23 @@ namespace BAIA.Data
             modelBuilder.Entity<Project>()
             .HasOne(p => p.User)
             .WithMany(u => u.Projects);
-            
+
+            modelBuilder.Entity<Meeting>()
+            .HasOne(m => m.Project)
+            .WithMany(p => p.Meetings);
+
+            modelBuilder.Entity<Service>()
+            .HasOne(s => s.Meeting)
+            .WithMany(m => m.Services);
+
+            modelBuilder.Entity<UserStory>()
+            .HasOne(us => us.Meeting)
+            .WithMany(m => m.UserStories);
+
+            modelBuilder.Entity<ServiceDetail>()
+            .HasOne(sd => sd.Service)
+            .WithMany(s => s.ServiceDetails);
+
 
             /*modelBuilder.Entity<User>()
                 .HasMany(u => u.Projects)

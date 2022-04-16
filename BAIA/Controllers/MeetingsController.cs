@@ -32,7 +32,7 @@ namespace BAIA.Controllers
         }
 
         //Get: api/Projects/GetMeetingAsIs/5
-        [Route("api/Projects/GetMeetingAsIs")]
+        [Route("api/Meetings/GetMeetingAsIs")]
         [HttpGet("GetMeetingAsIs/{id}")]
         public async Task<ActionResult<List<string>>> GetMeetingAsIs(int id)
         {
