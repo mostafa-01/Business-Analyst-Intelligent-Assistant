@@ -115,13 +115,21 @@ namespace BAIA.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [EnableCors]
-        public async Task<ActionResult<Meeting>> PostMeeting(Meeting meeting)
+        public async Task<ActionResult<Meeting>> PostMeeting([FromBody] AddMeetingModel model)
         {
-            
-            _context.Meetings.Add(meeting);
-            await _context.SaveChangesAsync();
+            try
+            {
+                model.meeting.Project = _context.Projects.FirstOrDefault(x => x.ProjectID == model.ProjectID);
+                _context.Meetings.Add(model.meeting);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMeeting", new { id = meeting.MeetingID }, meeting);
+            }
+            catch (Exception e)
+            {
+                Console.Out.WriteLine(e.ToString());
+                return StatusCode(500);
+            }
+            return CreatedAtAction("GetMeeting", new { id = model.meeting.MeetingID }, model.meeting);
         }
 
         // DELETE: api/Meetings/5
