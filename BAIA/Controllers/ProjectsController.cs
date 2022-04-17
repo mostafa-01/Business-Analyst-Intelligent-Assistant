@@ -31,7 +31,7 @@ namespace BAIA.Controllers
             return await _context.Projects.Include(p => p.User).ToListAsync();
         }
 
-        //Get: api/Projects/GetMeetingTitles/5
+        //Get: api/Projects/GetMeetingTitles/4
         [Route("api/Projects/GetMeetingTitles")]
         [HttpGet("GetMeetingTitles/{id}")]
         public async Task<ActionResult<List<string>>> GetMeetingTitles(int id)

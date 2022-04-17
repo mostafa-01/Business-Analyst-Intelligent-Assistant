@@ -9,7 +9,7 @@ using BAIA.Data;
 using BAIA.Models;
 using Microsoft.AspNetCore.Cors;
 using System.Text.Json;
-
+using RestSharp;
 
 namespace BAIA.Controllers
 {
@@ -33,7 +33,7 @@ namespace BAIA.Controllers
         [Route("api/Users/GetProjectNames")]
         [HttpGet("GetProjectNames/{id}")]
         [EnableCors]
-        public async Task<ActionResult<IEnumerable<string>>> GetProjectNAmes( int id)
+        public async Task<ActionResult<IEnumerable<string>>> GetProjectNames(int id)
         {
 
             var User = new User();
@@ -42,16 +42,26 @@ namespace BAIA.Controllers
                 return NoContent();
             else
             {
-                 List<string> ProjectNames = new List<string>();
-                 var projects = User.Projects.ToList();
-                 foreach (Project project in projects)
+                List<string> ProjectNames = new List<string>();
+                var projects = User.Projects.ToList();
+                foreach (Project project in projects)
                 {
-                    ProjectNames.Add(project.ProjectTitle);    
+                    ProjectNames.Add(project.ProjectTitle);
                 }
                 return ProjectNames;
             }
         }
 
+        //Get: Test API
+        [Route("api/Users/Test")]
+        [HttpGet("Test")]
+        public async Task<ActionResult<string>> Test()
+        {
+            var client = new RestClient($"http://127.0.0.1:5000/");
+            var request = new RestRequest("", Method.Get);
+            RestResponse response = await client.ExecuteAsync(request);
+            return response.ResponseStatus.ToString();
+        }
 
         // GET: api/Users
         [HttpGet]

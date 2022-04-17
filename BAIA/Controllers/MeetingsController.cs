@@ -56,7 +56,7 @@ namespace BAIA.Controllers
                             .ServiceDetails
                             .ToList())
                         {
-                            AsIs.Add(DetailLine.ServiceDetailString + "\n");
+                            AsIs.Add(DetailLine.ServiceDetailString);
                         }
                     }
                     return AsIs;
