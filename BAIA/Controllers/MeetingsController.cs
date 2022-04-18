@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BAIA.Data;
+using System.Text.Json;
 using BAIA.Models;
 using Microsoft.AspNetCore.Cors;
 using RestSharp;
+using Microsoft.CodeAnalysis;
 
 namespace BAIA.Controllers
 {
@@ -44,6 +46,7 @@ namespace BAIA.Controllers
             RestResponse response = await client.ExecuteAsync(request);
 
             _context.Meetings.FirstOrDefault(x => x.MeetingID == id).ASR_Text = response.Content;
+            _context.SaveChanges();
             return StatusCode(201);
             //return StatusCode(500);
         }
@@ -51,18 +54,38 @@ namespace BAIA.Controllers
         //Get: api/Projects/GetMeetingAsIs/5
         [Route("api/Meetings/GetMeetingAsIs")]
         [HttpGet("GetMeetingAsIs/{id}")]
-        public async Task<ActionResult<List<string>>> GetMeetingAsIs(int id)
+        public async Task<ActionResult<List<KeyValuePair<string, string>>>> GetMeetingAsIs(int id)
         {
             var meeting = new Meeting();
-            meeting = await _context.Meetings.Include(p => p.Services).FirstOrDefaultAsync(x => x.MeetingID == id);
+            meeting = await _context.Meetings.Include(p => p.Services).
+                FirstOrDefaultAsync(x => x.MeetingID == id);
             if (meeting == null)
                 return NoContent();
             else
             {
                 try
                 {
+                    
+                    List<string> Actors = meeting.Project.SystemActors.Split(',').ToList();
+                    var client = new RestClient($"http://127.0.0.1:5000/");
+                    var request = new RestRequest("services", Method.Post);
+                    request.AddJsonBody(new
+                    {
+                        meetinscript = meeting.ASR_Text,
+                        actors = Actors
+                    }) ;
+                    RestResponse response = await client.ExecuteAsync(request);
+                    foreach (var loc in response.Content.Split(':').ToList())
+                    {
+                        Console.WriteLine(loc);
+                    }
 
-                    List<string> AsIs = new List<string>();
+                    var AsIs = new List<KeyValuePair<string, string>>();
+                    var ConcatedString = response.Content;
+
+                    
+
+                    /*List<string> AsIs = new List<string>();
                     var Services = meeting.Services.ToList();
                     foreach (Service service in Services)
                     {
@@ -75,7 +98,7 @@ namespace BAIA.Controllers
                         {
                             AsIs.Add(DetailLine.ServiceDetailString);
                         }
-                    }
+                    }*/
                     return AsIs;
 
                 }
@@ -144,7 +167,6 @@ namespace BAIA.Controllers
                 model.meeting.Project = _context.Projects.FirstOrDefault(x => x.ProjectID == model.ProjectID);
                 _context.Meetings.Add(model.meeting);
                 await _context.SaveChangesAsync();
-                CreatedAtAction("GetASRText", new { id = model.meeting.MeetingID });
             }
             catch (Exception e)
             {

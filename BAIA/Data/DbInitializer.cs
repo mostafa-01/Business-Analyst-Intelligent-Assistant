@@ -35,7 +35,7 @@ namespace BAIA.Data
                 new Project{ProjectTitle="Spotify Music Player",ProjectDescription="It's a music player.....",Domain="Music Players",OrganizationName="Spotify",SystemActors="End-USer" , User=users[0]},
                 new Project{ProjectTitle="Facebook",ProjectDescription="It's a social media.....",Domain="Social Media",OrganizationName="Meta",SystemActors="End-USer" , User=users[1]},
                 new Project{ProjectTitle="Instagram",ProjectDescription="It's a social media.....",Domain="Social Media",OrganizationName="Meta", SystemActors="End-USer" , User=users[3]},
-                new Project{ProjectTitle="BAIA",ProjectDescription="It's an Assistant for BAs who.....",Domain="Not Specified",OrganizationName="FCIS", SystemActors="End-USer" ,User=users[5]}
+                new Project{ProjectTitle="BAIA",ProjectDescription="It's an Assistant for BAs who.....",Domain="Not Specified",OrganizationName="FCIS", SystemActors="BA,StackHolder" ,User=users[5]}
             };
             foreach (Project p in projects)
             {
