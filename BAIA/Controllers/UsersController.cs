@@ -60,7 +60,7 @@ namespace BAIA.Controllers
             var client = new RestClient($"http://127.0.0.1:5000/");
             var request = new RestRequest("", Method.Get);
             RestResponse response = await client.ExecuteAsync(request);
-            return response.ResponseStatus.ToString();
+            return response.Content;
         }
 
         // GET: api/Users

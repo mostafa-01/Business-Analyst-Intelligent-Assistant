@@ -21,7 +21,10 @@ namespace BAIA.Models
 
         [Required]
         public string OrganizationName { get; set; }
-        
+
+        [Required]
+        public string SystemActors { get; set; }
+
         public virtual IList<Meeting> Meetings { get; set; }
 
         public virtual User User { get; set; }

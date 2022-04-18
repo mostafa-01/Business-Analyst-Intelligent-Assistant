@@ -116,6 +116,7 @@ namespace BAIA.Controllers
         }
 
         // POST: api/Meetings
+        // AddMeetingModel is a class contains a meeting object and project id
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [EnableCors]

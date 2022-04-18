@@ -22,7 +22,6 @@ namespace BAIA.Models
         [Required]
         public string AudioReference { get; set; }
 
-        [Required]
         public string ASR_Text { get; set; }
 
         public virtual Project Project { get; set; }
