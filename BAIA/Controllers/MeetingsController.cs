@@ -140,7 +140,9 @@ namespace BAIA.Controllers
             try
             {
                 model.meeting.Project = _context.Projects.FirstOrDefault(x => x.ProjectID == model.ProjectID);
-                model.meeting.ASR_Text = CreatedAtAction("GetASRText", new { id = model.meeting.MeetingID }, model.meeting.ASR_Text).ToString();
+                model.meeting.ASR_Text = CreatedAtAction("GetASRText",
+                    new { id = model.meeting.MeetingID }
+                    ).ToString() ;
                 _context.Meetings.Add(model.meeting);
                 await _context.SaveChangesAsync();
 
