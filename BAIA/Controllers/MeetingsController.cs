@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BAIA.Data;
 using BAIA.Models;
 using Microsoft.AspNetCore.Cors;
+using RestSharp;
 
 namespace BAIA.Controllers
 {
@@ -29,6 +30,20 @@ namespace BAIA.Controllers
         public async Task<ActionResult<IEnumerable<Meeting>>> GetMeetings()
         {
             return await _context.Meetings.ToListAsync();
+        }
+
+        [Route("api/Meetings/GetASR-Text")]
+        [HttpGet("GetASR - Text /{id}")]
+        public async Task<ActionResult<string>> GetASRText(int id)
+        {
+            var client = new RestClient($"http://127.0.0.1:5000/");
+            var request = new RestRequest("meetingscript", Method.Post);
+            request.AddJsonBody(new {filepath = _context.Meetings
+                .FirstOrDefault(x=>x.MeetingID == id)
+                .AudioReference});
+            RestResponse response = await client.ExecuteAsync(request);
+            return response.Content;
+            //return StatusCode(500);
         }
 
         //Get: api/Projects/GetMeetingAsIs/5

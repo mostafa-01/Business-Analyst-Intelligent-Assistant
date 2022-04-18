@@ -44,8 +44,11 @@ namespace BAIA.Data
             context.SaveChanges();
             var meetings = new Meeting[]
             {
-                new Meeting{MeetingTitle="First Meeting", MeetingDescription="In this meeting we talked about.....",
-                    MeetingPersonnel="Ahmed Elsayed, Mohamed Ahmed",AudioReference="D:\\",ASR_Text="Speaker A: Good afternoon, it's a pleasure to meet with you today sirSpeaker B: the pleasure is mine",
+                new Meeting{MeetingTitle="First Meeting",
+                    MeetingDescription="In this meeting we talked about.....",
+                    MeetingPersonnel="Ahmed Elsayed, Mohamed Ahmed",
+                    AudioReference="ASRModule/audio_wac/batoul_meeting.wav",
+                    ASR_Text="Speaker A: Good afternoon, it's a pleasure to meet with you today sirSpeaker B: the pleasure is mine",
                     Project=projects[0] }
             };
             foreach (Meeting m in meetings)

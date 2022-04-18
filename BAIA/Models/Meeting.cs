@@ -13,7 +13,6 @@ namespace BAIA.Models
         [Required]
         public string MeetingTitle { get; set; }
 
-        [Required]
         public string MeetingDescription { get; set; }
 
         [Required]
