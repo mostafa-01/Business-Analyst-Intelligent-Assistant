@@ -33,7 +33,7 @@ namespace BAIA.Controllers
         }
 
         [Route("api/Meetings/GetASR-Text")]
-        [HttpGet("GetASR - Text /{id}")]
+        [HttpGet("GetASR-Text/{id}")]
         public async Task<ActionResult<string>> GetASRText(int id)
         {
             var client = new RestClient($"http://127.0.0.1:5000/");
@@ -140,6 +140,7 @@ namespace BAIA.Controllers
             try
             {
                 model.meeting.Project = _context.Projects.FirstOrDefault(x => x.ProjectID == model.ProjectID);
+                model.meeting.ASR_Text = CreatedAtAction("GetASRText", new { id = model.meeting.MeetingID }, model.meeting.ASR_Text).ToString();
                 _context.Meetings.Add(model.meeting);
                 await _context.SaveChangesAsync();
 
