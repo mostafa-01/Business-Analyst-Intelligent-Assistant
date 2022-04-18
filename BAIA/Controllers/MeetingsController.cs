@@ -140,9 +140,16 @@ namespace BAIA.Controllers
             try
             {
                 model.meeting.Project = _context.Projects.FirstOrDefault(x => x.ProjectID == model.ProjectID);
-                model.meeting.ASR_Text = CreatedAtAction("GetASRText",
-                    new { id = model.meeting.MeetingID }
-                    ).ToString() ;
+                var client = new RestClient($"http://127.0.0.1:5000/");
+                var request = new RestRequest("meetingscript", Method.Post);
+                request.AddJsonBody(new
+                {
+                    filepath =  model.meeting.AudioReference
+                });
+                RestResponse response = await client.ExecuteAsync(request);
+                
+                model.meeting.ASR_Text = response.Content;
+               
                 _context.Meetings.Add(model.meeting);
                 await _context.SaveChangesAsync();
 
