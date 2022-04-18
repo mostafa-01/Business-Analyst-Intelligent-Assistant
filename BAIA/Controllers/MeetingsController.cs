@@ -34,7 +34,7 @@ namespace BAIA.Controllers
 
         [Route("api/Meetings/GetASR-Text")]
         [HttpGet("GetASR-Text/{id}")]
-        public async Task<ActionResult<string>> GetASRText(int id)
+        public async Task<ActionResult> GetASRText(int id)
         {
             var client = new RestClient($"http://127.0.0.1:5000/");
             var request = new RestRequest("meetingscript", Method.Post);
@@ -42,7 +42,9 @@ namespace BAIA.Controllers
                 .FirstOrDefault(x=>x.MeetingID == id)
                 .AudioReference});
             RestResponse response = await client.ExecuteAsync(request);
-            return response.Content;
+
+            _context.Meetings.FirstOrDefault(x => x.MeetingID == id).ASR_Text = response.Content;
+            return StatusCode(201);
             //return StatusCode(500);
         }
 
@@ -140,19 +142,9 @@ namespace BAIA.Controllers
             try
             {
                 model.meeting.Project = _context.Projects.FirstOrDefault(x => x.ProjectID == model.ProjectID);
-                var client = new RestClient($"http://127.0.0.1:5000/");
-                var request = new RestRequest("meetingscript", Method.Post);
-                request.AddJsonBody(new
-                {
-                    filepath =  model.meeting.AudioReference
-                });
-                RestResponse response = await client.ExecuteAsync(request);
-                
-                model.meeting.ASR_Text = response.Content;
-               
                 _context.Meetings.Add(model.meeting);
                 await _context.SaveChangesAsync();
-
+                CreatedAtAction("GetASRText", new { id = model.meeting.MeetingID });
             }
             catch (Exception e)
             {
