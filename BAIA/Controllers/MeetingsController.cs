@@ -54,11 +54,12 @@ namespace BAIA.Controllers
         //Get: api/Projects/GetMeetingAsIs/5
         [Route("api/Meetings/GetMeetingAsIs")]
         [HttpGet("GetMeetingAsIs/{id}")]
-        public async Task<ActionResult<List<KeyValuePair<string, string>>>> GetMeetingAsIs(int id)
+        public async Task<ActionResult> GetMeetingAsIs(int id)
         {
             var meeting = new Meeting();
-            meeting = await _context.Meetings.Include(p => p.Services).
+            meeting = await _context.Meetings.Include(p => p.Services).Include(s => s.Project).
                 FirstOrDefaultAsync(x => x.MeetingID == id);
+            _context.Services.Include(SD => SD.ServiceDetails);
             if (meeting == null)
                 return NoContent();
             else
@@ -71,36 +72,37 @@ namespace BAIA.Controllers
                     var request = new RestRequest("services", Method.Post);
                     request.AddJsonBody(new
                     {
-                        meetinscript = meeting.ASR_Text,
+                        meetingscript = meeting.ASR_Text,
                         actors = Actors
                     }) ;
-                    RestResponse response = await client.ExecuteAsync(request);
-                    foreach (var loc in response.Content.Split(':').ToList())
+                    request.AddHeader("content-type", "application/json");
+                    var response = await client.ExecuteAsync(request);
+                    var content = response.Content;
+
+                    Dictionary<string, List<string>> ServicesDic = new Dictionary<string, List<string>>();
+
+                    ServicesDic = ToKeyValue(content);
+
+                    foreach(var keyval in ServicesDic)
                     {
-                        Console.WriteLine(loc);
+                        meeting.Services.Add(new Service
+                        {
+                            ServiceTitle = keyval.Key,
+                            Meeting = meeting
+                        });
+                        var ser = meeting.Services.FirstOrDefault(x => x.ServiceTitle == keyval.Key);
+                        foreach (var val in keyval.Value)
+                        {
+                            ser.
+                                ServiceDetails.Add(new ServiceDetail
+                                {
+                                    ServiceDetailString = val,
+                                    Service = ser
+                                });
+                        }
                     }
 
-                    var AsIs = new List<KeyValuePair<string, string>>();
-                    var ConcatedString = response.Content;
-
-                    
-
-                    /*List<string> AsIs = new List<string>();
-                    var Services = meeting.Services.ToList();
-                    foreach (Service service in Services)
-                    {
-                        AsIs.Add(service.ServiceTitle + ":");
-                        foreach(var DetailLine in _context.Services
-                            .Include(z => z.ServiceDetails)
-                            .FirstOrDefault(a => a.ServiceID == service.ServiceID)
-                            .ServiceDetails
-                            .ToList())
-                        {
-                            AsIs.Add(DetailLine.ServiceDetailString);
-                        }
-                    }*/
-                    return AsIs;
-
+                 return Content(ServicesDic.ToString());
                 }
                 catch (Exception e)
                 {
@@ -195,6 +197,17 @@ namespace BAIA.Controllers
         private bool MeetingExists(int id)
         {
             return _context.Meetings.Any(e => e.MeetingID == id);
+        }
+
+        private Dictionary<string, List<string>> ToKeyValue(string content)
+        {
+            
+
+            var values = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(content);
+
+
+
+            return values;
         }
     }
 }
