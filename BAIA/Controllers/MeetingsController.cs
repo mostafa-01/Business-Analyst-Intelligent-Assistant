@@ -34,6 +34,7 @@ namespace BAIA.Controllers
             return await _context.Meetings.ToListAsync();
         }
 
+
         [Route("api/Meetings/GetASR-Text")]
         [HttpGet("GetASR-Text/{id}")]
         public async Task<ActionResult> GetASRText(int id)

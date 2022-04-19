@@ -64,7 +64,9 @@ namespace BAIA.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Project>> GetProject(int id)
         {
-            var project = await _context.Projects.FindAsync(id);
+            
+            var project = await _context.Projects.Include(M => M.Meetings)
+                .FirstOrDefaultAsync(x => x.ProjectID == id);
 
             if (project == null)
             {
@@ -74,12 +76,14 @@ namespace BAIA.Controllers
             return project;
         }
 
-        [HttpGet("{title}")]
+        [Route("api/Projects/GetProject")]
+        [HttpGet("GetProject/{title}")]
         public async Task<ActionResult<Project>> GetProject(string title)
         {
             try
             {
                 var project = await _context.Projects.
+                    Include(m => m.Meetings).
                     FirstOrDefaultAsync(x => x.ProjectTitle == title);
 
                 if (project == null)
