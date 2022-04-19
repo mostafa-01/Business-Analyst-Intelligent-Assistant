@@ -43,16 +43,16 @@ namespace BAIA.Controllers
             else
             {
                 try {
-                    
+
                     List<string> MeetingTitles = new List<string>();
                     var meetings = project.Meetings.ToList();
                     foreach (Meeting meeting in meetings)
                     {
-                         MeetingTitles.Add(meeting.MeetingTitle);
+                        MeetingTitles.Add(meeting.MeetingTitle);
                     }
                     return MeetingTitles;
 
-                }catch(Exception e)
+                } catch (Exception e)
                 {
                     Console.Out.WriteLine(e.ToString());
                     return StatusCode(500);
@@ -72,6 +72,25 @@ namespace BAIA.Controllers
             }
 
             return project;
+        }
+
+        [HttpGet("{title}")]
+        public async Task<ActionResult<Project>> GetProject(string title)
+        {
+            try
+            {
+                var project = await _context.Projects.
+                    FirstOrDefaultAsync(x => x.ProjectTitle == title);
+
+                if (project == null)
+                    return BadRequest();
+
+                return project;
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500);
+            }
         }
 
         // PUT: api/Projects/5

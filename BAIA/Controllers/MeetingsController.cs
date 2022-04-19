@@ -54,7 +54,7 @@ namespace BAIA.Controllers
         //Get: api/Projects/GetMeetingAsIs/5
         [Route("api/Meetings/GetMeetingAsIs")]
         [HttpGet("GetMeetingAsIs/{id}")]
-        public async Task<ActionResult> GetMeetingAsIs(int id)
+        public async Task<ActionResult<Dictionary<string, List<string>>>> GetMeetingAsIs(int id)
         {
             var meeting = new Meeting();
             meeting = await _context.Meetings.Include(p => p.Services).Include(s => s.Project).
@@ -101,8 +101,8 @@ namespace BAIA.Controllers
                                 });
                         }
                     }
-
-                 return Content(ServicesDic.ToString());
+                    await _context.SaveChangesAsync();
+                    return ServicesDic;
                 }
                 catch (Exception e)
                 {
