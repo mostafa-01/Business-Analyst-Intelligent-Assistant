@@ -34,7 +34,7 @@ namespace BAIA.Controllers
             return await _context.Meetings.ToListAsync();
         }
 
-
+        /*
         [Route("api/Meetings/GetASR-Text")]
         [HttpGet("GetASR-Text/{id}")]
         public async Task<ActionResult> GetASRText(int id)
@@ -51,16 +51,17 @@ namespace BAIA.Controllers
             return StatusCode(201);
             //return StatusCode(500);
         }
-
+        
         //Get: api/Projects/GetMeetingAsIs/5
         [Route("api/Meetings/GetMeetingAsIs")]
         [HttpGet("GetMeetingAsIs/{id}")]
         public async Task<ActionResult<Dictionary<string, List<string>>>> GetMeetingAsIs(int id)
         {
             var meeting = new Meeting();
-            meeting = await _context.Meetings.Include(p => p.Services).Include(s => s.Project).
-                FirstOrDefaultAsync(x => x.MeetingID == id);
-            _context.Services.Include(SD => SD.ServiceDetails);
+            meeting = await _context.Meetings
+                .Include(p => p.Services)
+                .ThenInclude(s => s.ServiceDetails)
+                .FirstOrDefaultAsync(x => x.MeetingID == id);
             if (meeting == null)
                 return NoContent();
             else
@@ -107,17 +108,20 @@ namespace BAIA.Controllers
                 }
                 catch (Exception e)
                 {
-                    Console.Out.WriteLine(e.ToString());
-                    return StatusCode(500);
+                    return Content(e.ToString() + StatusCode(500));
+                    //return StatusCode(500);
                 }
             }
         }
-
+        */
         // GET: api/Meetings/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Meeting>> GetMeeting(int id)
         {
-            var meeting = await _context.Meetings.FindAsync(id);
+            var meeting = await _context.Meetings
+                .Include(s => s.Services)
+                .ThenInclude(w => w.ServiceDetails)
+                .FirstOrDefaultAsync(x => x.MeetingID == id);
 
             if (meeting == null)
             {
