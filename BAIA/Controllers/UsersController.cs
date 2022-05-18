@@ -29,7 +29,7 @@ namespace BAIA.Controllers
 
         // READ
 
-        // This API is returning the project Names related to a user
+        // This API is returning the Project Titles related to a user
         [Route("api/Users/GetProjectNames")]
         [HttpGet("GetProjectNames/{id}")]
         [EnableCors]

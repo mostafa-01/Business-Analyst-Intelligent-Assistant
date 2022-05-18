@@ -117,6 +117,7 @@ namespace BAIA.Controllers
         // GET: api/Meetings/5
         [Route("api/Meetings/GetMeetingServices")]
         [HttpGet("GetMeetingServices/{id}")]
+        [EnableCors]
         public async Task<ActionResult<Meeting>> GetMeetingServices(int id)
         {
             var meeting = await _context.Meetings
