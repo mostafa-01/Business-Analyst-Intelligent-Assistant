@@ -34,7 +34,7 @@ namespace BAIA.Controllers
             return await _context.Meetings.ToListAsync();
         }
 
-        /*
+        
         [Route("api/Meetings/GetASR-Text")]
         [HttpGet("GetASR-Text/{id}")]
         public async Task<ActionResult> GetASRText(int id)
@@ -51,7 +51,7 @@ namespace BAIA.Controllers
             return StatusCode(201);
             //return StatusCode(500);
         }
-        
+        /*
         //Get: api/Projects/GetMeetingAsIs/5
         [Route("api/Meetings/GetMeetingAsIs")]
         [HttpGet("GetMeetingAsIs/{id}")]
@@ -115,8 +115,9 @@ namespace BAIA.Controllers
         }
         */
         // GET: api/Meetings/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Meeting>> GetMeeting(int id)
+        [Route("api/Meetings/GetMeetingServices")]
+        [HttpGet("GetMeetingServices/{id}")]
+        public async Task<ActionResult<Meeting>> GetMeetingServices(int id)
         {
             var meeting = await _context.Meetings
                 .Include(s => s.Services)
