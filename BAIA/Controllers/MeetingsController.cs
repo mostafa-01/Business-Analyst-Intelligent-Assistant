@@ -43,7 +43,7 @@ namespace BAIA.Controllers
 
         // GET: api/Meetings/GetASR-Text/1
         // This API calls the ASR-Model to to generate the Transcript for Meeting with {id}
-        [Route("api/Meetings/GetASR-Text")]
+        /*[Route("api/Meetings/GetASR-Text")]
         [HttpGet("GetASR-Text/AudioReference")]
         [EnableCors]
         public async Task<ActionResult<string>> GetASRText(string AudioReference)
@@ -55,7 +55,7 @@ namespace BAIA.Controllers
             if (response.Content == null)
                 return BadRequest();
             return response.Content;
-        }
+        }*/
 
         /*
         //Get: api/Projects/GetMeetingAsIs/5
@@ -195,7 +195,15 @@ namespace BAIA.Controllers
             try
             {
                 model.Meeting.Project = _context.Projects.FirstOrDefault(x => x.ProjectID == model.ProjectID);
-                //string response = GetASRText(model.Meeting.AudioReference);
+
+                var client = new RestClient($"http://127.0.0.1:5000/");
+                var request = new RestRequest("meetingscript", Method.Post);
+                request.AddJsonBody(new { filepath = model.Meeting.AudioReference});
+                RestResponse response = await client.ExecuteAsync(request);
+                if (response.Content == null)
+                    return BadRequest();
+                model.Meeting.ASR_Text = response.Content;
+
                 _context.Meetings.Add(model.Meeting);
                 await _context.SaveChangesAsync();
             }
@@ -216,7 +224,7 @@ namespace BAIA.Controllers
         [Route("api/Meetings/DeleteMeeting")]
         [HttpPut("DeleteMeeting/{id}")]
         [EnableCors]
-        public async Task<IActionResult> DeleteMeeting(int id)
+        public async Task<ActionResult<Meeting>> DeleteMeeting(int id)
         {
             var meeting = await _context.Meetings.FindAsync(id);
             if (meeting == null)
@@ -227,7 +235,7 @@ namespace BAIA.Controllers
             _context.Meetings.Remove(meeting);
             await _context.SaveChangesAsync();
 
-            return Ok();
+            return await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == id); ;
         }
 
         private bool MeetingExists(int id)

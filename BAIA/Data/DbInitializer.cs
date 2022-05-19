@@ -67,9 +67,9 @@ namespace BAIA.Data
             context.SaveChanges();
             var serviceDetails = new ServiceDetail[]
             {
-                new ServiceDetail{ServiceDetailString="login page should be the.....",Service=services[0]},
-                new ServiceDetail{ServiceDetailString="It should provide two text.....",Service=services[0]},
-                new ServiceDetail{ServiceDetailString="It should have a command.....",Service=services[0]}
+                new ServiceDetail{ServiceDetailString="login page should be the.....",Timestamp="1:30",Service=services[0]},
+                new ServiceDetail{ServiceDetailString="It should provide two text.....",Timestamp="5:21",Service=services[0]},
+                new ServiceDetail{ServiceDetailString="It should have a command.....",Timestamp="10:32",Service=services[0]}
             };
             foreach (ServiceDetail sd in serviceDetails)
             {

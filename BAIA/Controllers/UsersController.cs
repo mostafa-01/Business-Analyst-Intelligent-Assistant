@@ -117,7 +117,7 @@ namespace BAIA.Controllers
         // UPDATE
 
         // PUT: api/Users/UpdateUser/1
-        // This API updates User's data related to user with {id}
+        // This API updates User's data related to User with {id}
         // Must send User Object in Body
 
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

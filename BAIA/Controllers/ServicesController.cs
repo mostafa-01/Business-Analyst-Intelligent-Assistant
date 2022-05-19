@@ -24,15 +24,25 @@ namespace BAIA.Controllers
             _context = context;
         }
 
-        // GET: api/Services
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Service>>> GetServices()
+        //-----------------------------------------------------------------------//
+
+        // READ
+
+        // GET: api/Services/GetAllServices
+        // This API returns all Services in Database
+        [Route("api/Services/GetAllServices")]
+        [HttpGet("GetAllServices")]
+        [EnableCors]
+        public async Task<ActionResult<IEnumerable<Service>>> GetAllServices()
         {
             return await _context.Services.ToListAsync();
         }
 
-        // GET: api/Services/5
-        [HttpGet("{id}")]
+        // GET: api/Service/1
+        // This API returns Service with {id}
+        [Route("api/Services/GetAllServices")]
+        [HttpGet("GetService/{id}")]
+        [EnableCors]
         public async Task<ActionResult<Service>> GetService(int id)
         {
             var service = await _context.Services.FindAsync(id);
@@ -45,10 +55,17 @@ namespace BAIA.Controllers
             return service;
         }
 
-        // PUT: api/Services/5
+        // UPDATE
+
+        // PUT: api/Services/UpdateService/1
+        // This API updates User's data related to Service with {id}
+        // Must send User Object in Body
+
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutService(int id, Service service)
+        [Route("api/Users/UpdateService")]
+        [HttpPut("UpdateService/{id}")]
+        [EnableCors]
+        public async Task<ActionResult<Service>> UpdateService(int id, Service service)
         {
             if (id != service.ServiceID)
             {
@@ -73,7 +90,8 @@ namespace BAIA.Controllers
                 }
             }
 
-            return NoContent();
+            return await _context.Services.FirstOrDefaultAsync(x => x.ServiceID == id); ;
+            
         }
 
         // POST: api/Services
