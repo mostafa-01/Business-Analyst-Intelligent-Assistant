@@ -124,7 +124,7 @@ namespace BAIA.Controllers
         [Route("api/Users/UpdateUser")]
         [HttpPut("UpdateUser/{id}")]
         [EnableCors]
-        public async Task<IActionResult> UpdateUser(int id, User user)
+        public async Task<ActionResult<User>> UpdateUser(int id, User user)
         {
             if (id != user.UserID)
             {
@@ -149,7 +149,7 @@ namespace BAIA.Controllers
                 }
             }
 
-            return Ok();
+            return await _context.Users.FirstOrDefaultAsync(x => x.UserID == id); ;
         }
 
         //-----------------------------------------------------------------------//

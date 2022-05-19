@@ -7,7 +7,7 @@ namespace BAIA.Models
 {
     public class AddMeetingModel
     {
-        public Meeting meeting { get; set; }
+        public Meeting Meeting { get; set; }
 
         public int ProjectID { get; set; }
     }

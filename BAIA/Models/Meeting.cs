@@ -10,15 +10,15 @@ namespace BAIA.Models
     {
         public int MeetingID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Meeting Title is required")]
         public string MeetingTitle { get; set; }
 
         public string MeetingDescription { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "You must select Meeting Personnel")]
         public string MeetingPersonnel { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "You must upload the Meeting Recording")]
         public string AudioReference { get; set; }
 
         public string ASR_Text { get; set; }

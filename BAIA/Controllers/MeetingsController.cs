@@ -27,30 +27,36 @@ namespace BAIA.Controllers
             _context = context;
         }
 
-        // GET: api/Meetings
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Meeting>>> GetMeetings()
+        //-----------------------------------------------------------------------//
+
+        // READ
+
+        // GET: api/Meetings/GetAllMeetings
+        // This API returns all Meetings in Database
+        [Route("api/Meetings/GetAllMeetings")]
+        [HttpGet("GetAllMeetings")]
+        [EnableCors]
+        public async Task<ActionResult<IEnumerable<Meeting>>> GetAllMeetings()
         {
             return await _context.Meetings.ToListAsync();
         }
 
-        
+        // GET: api/Meetings/GetASR-Text/1
+        // This API calls the ASR-Model to to generate the Transcript for Meeting with {id}
         [Route("api/Meetings/GetASR-Text")]
-        [HttpGet("GetASR-Text/{id}")]
-        public async Task<ActionResult> GetASRText(int id)
+        [HttpGet("GetASR-Text/AudioReference")]
+        [EnableCors]
+        public async Task<ActionResult<string>> GetASRText(string AudioReference)
         {
             var client = new RestClient($"http://127.0.0.1:5000/");
             var request = new RestRequest("meetingscript", Method.Post);
-            request.AddJsonBody(new {filepath = _context.Meetings
-                .FirstOrDefault(x=>x.MeetingID == id)
-                .AudioReference});
+            request.AddJsonBody(new {filepath = AudioReference});
             RestResponse response = await client.ExecuteAsync(request);
-
-            _context.Meetings.FirstOrDefault(x => x.MeetingID == id).ASR_Text = response.Content;
-            _context.SaveChanges();
-            return StatusCode(201);
-            //return StatusCode(500);
+            if (response.Content == null)
+                return BadRequest();
+            return response.Content;
         }
+
         /*
         //Get: api/Projects/GetMeetingAsIs/5
         [Route("api/Meetings/GetMeetingAsIs")]
@@ -114,11 +120,13 @@ namespace BAIA.Controllers
             }
         }
         */
-        // GET: api/Meetings/5
-        [Route("api/Meetings/GetMeetingServices")]
-        [HttpGet("GetMeetingServices/{id}")]
+
+        // GET: api/Meetings/GetMeeting/1
+        // This API gets Services of a specific Meeting with {id} it includes Services and Service Details
+        [Route("api/Meetings/GetMeeting")]
+        [HttpGet("GetMeeting/{id}")]
         [EnableCors]
-        public async Task<ActionResult<Meeting>> GetMeetingServices(int id)
+        public async Task<ActionResult<Meeting>> GetMeeting(int id)
         {
             var meeting = await _context.Meetings
                 .Include(s => s.Services)
@@ -133,10 +141,17 @@ namespace BAIA.Controllers
             return meeting;
         }
 
-        // PUT: api/Meetings/5
+        //-----------------------------------------------------------------------//
+
+        // UPDATE
+
+        // PUT: api/Meetings/UpdateMeeting/5
+        // This API updates a specific Meeting details for Meeting with {id}
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutMeeting(int id, Meeting meeting)
+        [Route("api/Meetings/UpdateMeeting")]
+        [HttpPut("UpdateMeeting/{id}")]
+        [EnableCors]
+        public async Task<IActionResult> UpdateMeeting(int id, Meeting meeting)
         {
             if (id != meeting.MeetingID)
             {
@@ -161,20 +176,27 @@ namespace BAIA.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok();
         }
 
-        // POST: api/Meetings
-        // AddMeetingModel is a class contains a meeting object and project id
+        //-----------------------------------------------------------------------//
+
+        // CREATE
+
+        // POST: api/Meetings/PostMeeting
+        // This API creates a new Meeting
+        // AddMeetingModel is a class contains a Meeting object and ProjectId
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [Route("api/Meetings/PostMeeting")]
+        [HttpPost("PostMeeting")]
         [EnableCors]
         public async Task<ActionResult<Meeting>> PostMeeting([FromBody] AddMeetingModel model)
         {
             try
             {
-                model.meeting.Project = _context.Projects.FirstOrDefault(x => x.ProjectID == model.ProjectID);
-                _context.Meetings.Add(model.meeting);
+                model.Meeting.Project = _context.Projects.FirstOrDefault(x => x.ProjectID == model.ProjectID);
+                //string response = GetASRText(model.Meeting.AudioReference);
+                _context.Meetings.Add(model.Meeting);
                 await _context.SaveChangesAsync();
             }
             catch (Exception e)
@@ -182,11 +204,18 @@ namespace BAIA.Controllers
                 Console.Out.WriteLine(e.ToString());
                 return StatusCode(500);
             }
-            return CreatedAtAction("GetMeeting", new { id = model.meeting.MeetingID }, model.meeting);
+            return CreatedAtAction("GetMeeting", new { id = model.Meeting.MeetingID }, model.Meeting);
         }
 
-        // DELETE: api/Meetings/5
-        [HttpDelete("{id}")]
+        //-----------------------------------------------------------------------//
+
+        // DELETE
+
+        // DELETE: api/Meetings/DeleteMeeting/1
+        // This API deletes a specific Meeting with {id}
+        [Route("api/Meetings/DeleteMeeting")]
+        [HttpPut("DeleteMeeting/{id}")]
+        [EnableCors]
         public async Task<IActionResult> DeleteMeeting(int id)
         {
             var meeting = await _context.Meetings.FindAsync(id);
@@ -198,7 +227,7 @@ namespace BAIA.Controllers
             _context.Meetings.Remove(meeting);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         private bool MeetingExists(int id)
@@ -206,7 +235,7 @@ namespace BAIA.Controllers
             return _context.Meetings.Any(e => e.MeetingID == id);
         }
 
-        private Dictionary<string, List<string>> ToKeyValue(string content)
+        /*private Dictionary<string, List<string>> ToKeyValue(string content)
         {
             
 
@@ -215,6 +244,6 @@ namespace BAIA.Controllers
 
 
             return values;
-        }
+        }*/
     }
 }

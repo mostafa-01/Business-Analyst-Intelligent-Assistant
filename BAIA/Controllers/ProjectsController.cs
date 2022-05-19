@@ -119,7 +119,7 @@ namespace BAIA.Controllers
         [Route("api/Projects/UpdateProject")]
         [HttpPut("UpdateProject/{id}")]
         [EnableCors]
-        public async Task<IActionResult> PutProject(int id, Project project)
+        public async Task<IActionResult> UpdateProject(int id, Project project)
         {
             if (id != project.ProjectID)
             {

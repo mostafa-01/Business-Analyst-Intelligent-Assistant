@@ -13,6 +13,7 @@ namespace BAIA.Models
 
         [Required]
         public string ServiceDetailString { get; set; }
+        public int Timestamp { get; set; }
 
         [DefaultValue(false)]
         public bool ServiceDetailVerified { get; set; }
