@@ -29,11 +29,12 @@ namespace BAIA.Controllers
 
         // READ
 
-        // This API is returning the Project Titles related to a user
-        [Route("api/Users/GetProjectNames")]
-        [HttpGet("GetProjectNames/{id}")]
+        // GET: api/Users/GetProjectTitles/1
+        // This API returns Project Titles related to user with {id}
+        [Route("api/Users/GetProjectTitles")]
+        [HttpGet("GetProjectTitles/{id}")]
         [EnableCors]
-        public async Task<ActionResult<IEnumerable<string>>> GetProjectNames(int id)
+        public async Task<ActionResult<IEnumerable<string>>> GetProjectTitles(int id)
         {
 
             var User = new User();
@@ -42,16 +43,17 @@ namespace BAIA.Controllers
                 return NoContent();
             else
             {
-                List<string> ProjectNames = new List<string>();
+                List<string> ProjectTitles = new List<string>();
                 var projects = User.Projects.ToList();
                 foreach (Project project in projects)
                 {
-                    ProjectNames.Add(project.ProjectTitle);
+                    ProjectTitles.Add(project.ProjectTitle);
                 }
-                return ProjectNames;
+                return ProjectTitles;
             }
         }
 
+        /*
         //Get: Test API
         [Route("api/Users/Test")]
         [HttpGet("Test")]
@@ -62,17 +64,22 @@ namespace BAIA.Controllers
             RestResponse response = await client.ExecuteAsync(request);
             return response.Content;
         }
+        */
 
-        // GET: api/Users
-        [HttpGet]
+        // GET: api/Users 
+        // This API returns all Users in Database
+        [Route("api/Users/GetAllUsers")]
+        [HttpGet("GetAllUsers")]
         [EnableCors]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
         {
             return await _context.Users.ToListAsync();
         }
 
         // GET: api/Users/5
-        [HttpGet("{id}")]    
+        // This API returns User's data related to User with {id}
+        [Route("api/Users/GetUser")]
+        [HttpGet("GetUser/{id}")]
         [EnableCors]
         public async Task<ActionResult<User>> GetUser(int id)
         {
@@ -85,15 +92,17 @@ namespace BAIA.Controllers
 
             return user;
         }
-        
-        // GET: api/Users/youssef@gmail.com/youssef12345
+
+        // Post: api/Users/Login
+        // This API checks if User exists in Database by Email and Password from Body
+        // { "Email":"youssef@gmail.com", "Password":"youssef12345" }
         [Route("api/Users/Login")]
         [HttpPost("Login")]
         [EnableCors]
         public async Task<ActionResult<User>> Login([FromBody] LoginModel model)
         {
             
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == model.Name && x.Password == model.Password);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == model.Email && x.Password == model.Password);
 
             if (user == null)
             {
@@ -107,11 +116,15 @@ namespace BAIA.Controllers
 
         // UPDATE
 
-        // PUT: api/Users/5
+        // PUT: api/Users/UpdateUser/1
+        // This API updates User's data related to user with {id}
+        // Must send User Object in Body
+
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [Route("api/Users/UpdateUser")]
+        [HttpPut("UpdateUser/{id}")]
         [EnableCors]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> UpdateUser(int id, User user)
         {
             if (id != user.UserID)
             {
@@ -136,17 +149,21 @@ namespace BAIA.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok();
         }
 
         //-----------------------------------------------------------------------//
 
         // CREATE
 
-        // POST: api/Users
+        // POST: api/Users/PostUser
+        // This API creates a new User
+        // Must send User Object in Body
+
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        
-        [HttpPost]
+
+        [Route("api/Users/PostUser")]
+        [HttpPost("PostUser")]
         [EnableCors]
         public async Task<ActionResult<User>> PostUser(User user)
         {
@@ -164,8 +181,10 @@ namespace BAIA.Controllers
 
         // DELETE
 
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
+        // DELETE: api/Users/DeleteUser/1
+        // This API deletes a specific User with {id}
+        [Route("api/Users/DeleteUser")]
+        [HttpDelete("DeleteUser/{id}")]
         [EnableCors]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -178,7 +197,7 @@ namespace BAIA.Controllers
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         //-----------------------------------------------------------------------//

@@ -9,20 +9,20 @@ namespace BAIA.Models
     public class Project
     {
         public int ProjectID { get; set; }
-        
-        [Required]
+
+        [Required(ErrorMessage = "Project Title is required")]
         public string ProjectTitle { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Project Description is required")]
         public string ProjectDescription { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Project Domain is required")]
         public string Domain { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Organization Name is required")]
         public string OrganizationName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "System Actors are required")]
         public string SystemActors { get; set; }
 
         public virtual IList<Meeting> Meetings { get; set; }

@@ -7,7 +7,7 @@ namespace BAIA.Models
 {
     public class AddProjectModel
     {
-        public Project project { get; set; }
+        public Project Project { get; set; }
 
         public int UserID { get; set; }
     }

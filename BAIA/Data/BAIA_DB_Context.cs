@@ -24,24 +24,36 @@ namespace BAIA.Data
         {
 
             modelBuilder.Entity<Project>()
-            .HasOne(p => p.User)
-            .WithMany(u => u.Projects);
+                .HasOne(p => p.User)
+                .WithMany(u => u.Projects)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            /*modelBuilder.Entity<Project>()
+                .HasIndex(p => p.ProjectTitle)
+                .IsUnique();*/
+
 
             modelBuilder.Entity<Meeting>()
-            .HasOne(m => m.Project)
-            .WithMany(p => p.Meetings);
+                .HasOne(m => m.Project)
+                .WithMany(p => p.Meetings)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Service>()
-            .HasOne(s => s.Meeting)
-            .WithMany(m => m.Services);
+                .HasOne(s => s.Meeting)
+                .WithMany(m => m.Services)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             modelBuilder.Entity<UserStory>()
-            .HasOne(us => us.Meeting)
-            .WithMany(m => m.UserStories);
+                .HasOne(us => us.Meeting)
+                .WithMany(m => m.UserStories)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ServiceDetail>()
-            .HasOne(sd => sd.Service)
-            .WithMany(s => s.ServiceDetails);
+                .HasOne(sd => sd.Service)
+                .WithMany(s => s.ServiceDetails)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
 
             /*modelBuilder.Entity<User>()

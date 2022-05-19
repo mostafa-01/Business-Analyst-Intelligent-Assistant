@@ -24,16 +24,25 @@ namespace BAIA.Controllers
             _context = context;
         }
 
-        // GET: api/Projects
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Project>>> GetProjects()
+        //-----------------------------------------------------------------------//
+
+        // READ
+
+        // GET: api/Projects/GetAllProjects
+        // This API returns all Projects in Database
+        [Route("api/Projects/GetAllProjects")]
+        [HttpGet("GetAllProjects")]
+        [EnableCors]
+        public async Task<ActionResult<IEnumerable<Project>>> GetAllProjects()
         {
-            return await _context.Projects.Include(p => p.User).ToListAsync();
+            return await _context.Projects.Include(p => p.Meetings).ToListAsync();
         }
 
-        //Get: api/Projects/GetMeetingTitles/4
+        // GET: api/Projects/GetMeetingTitles/4
+        // This API returns all Meetings Titles in Database with Project {id}
         [Route("api/Projects/GetMeetingTitles")]
         [HttpGet("GetMeetingTitles/{id}")]
+        [EnableCors]
         public async Task<ActionResult<List<string>>> GetMeetingTitles(int id)
         {
             var project = new Project();
@@ -42,7 +51,8 @@ namespace BAIA.Controllers
                 return NoContent();
             else
             {
-                try {
+                try
+                {
 
                     List<string> MeetingTitles = new List<string>();
                     var meetings = project.Meetings.ToList();
@@ -52,7 +62,8 @@ namespace BAIA.Controllers
                     }
                     return MeetingTitles;
 
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     Console.Out.WriteLine(e.ToString());
                     return StatusCode(500);
@@ -61,10 +72,13 @@ namespace BAIA.Controllers
         }
 
         // GET: api/Projects/5
-        [HttpGet("{id}")]
+        // This API returns Project with {id} including it's Meetings
+        [Route("api/Projects/GetProject")]
+        [HttpGet("GetProject/{id}")]
+        [EnableCors]
         public async Task<ActionResult<Project>> GetProject(int id)
         {
-            
+
             var project = await _context.Projects.Include(M => M.Meetings)
                 .FirstOrDefaultAsync(x => x.ProjectID == id);
 
@@ -76,30 +90,35 @@ namespace BAIA.Controllers
             return project;
         }
 
-        [Route("api/Projects/GetProject")]
-        [HttpGet("GetProject/{title}")]
-        public async Task<ActionResult<Project>> GetProject(string title)
+
+        // GET: api/Projects/GetProjectByTitle/First Meeting
+        // This API returns Project with specific {title} including it's Meetings
+        [Route("api/Projects/GetProjectByTitle")]
+        [HttpGet("GetProjectByTitle/{title}")]
+        [EnableCors]
+        public async Task<ActionResult<Project>> GetProjectByTitle(string title)
         {
-            try
-            {
-                var project = await _context.Projects.
+            var project = await _context.Projects.
                     Include(m => m.Meetings).
                     FirstOrDefaultAsync(x => x.ProjectTitle == title);
 
-                if (project == null)
-                    return BadRequest();
+            if (project == null)
+                return NotFound();
 
-                return project;
-            }
-            catch (Exception e)
-            {
-                return StatusCode(500);
-            }
+            return project;
+
         }
 
-        // PUT: api/Projects/5
+        //-----------------------------------------------------------------------//
+
+        // UPDATE
+
+        // PUT: api/Projects/UpdateProject/5
+        // This API updates Project's data related to Project with {id}
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [Route("api/Projects/UpdateProject")]
+        [HttpPut("UpdateProject/{id}")]
+        [EnableCors]
         public async Task<IActionResult> PutProject(int id, Project project)
         {
             if (id != project.ProjectID)
@@ -125,23 +144,29 @@ namespace BAIA.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok();
         }
 
-        // POST: api/Projects
+        //-----------------------------------------------------------------------//
+
+        // CREATE
+
+        // POST: api/Projects/PostProject
+        // This API creates a new Project
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [Route("api/Projects/PostProject")]
+        [HttpPost("PostProject")]
         [EnableCors]
         public async Task<ActionResult<Project>> PostProject([FromBody] AddProjectModel model)
         {
-            if(_context.Projects.FirstOrDefault(x => x.ProjectTitle == model.project.ProjectTitle) != null)
+            if (_context.Projects.FirstOrDefault(x => x.ProjectTitle == model.Project.ProjectTitle) != null)
             {
                 return BadRequest();
             }
             try
             {
-                model.project.User = _context.Users.FirstOrDefault(x => x.UserID == model.UserID);
-                _context.Projects.Add(model.project);
+                model.Project.User = _context.Users.FirstOrDefault(x => x.UserID == model.UserID);
+                _context.Projects.Add(model.Project);
                 await _context.SaveChangesAsync();
 
             }
@@ -151,11 +176,17 @@ namespace BAIA.Controllers
                 return StatusCode(500);
             }
 
-            return CreatedAtAction("GetProject", new { id = model.project.ProjectID }, model.project);
+            return CreatedAtAction("GetProject", new { id = model.Project.ProjectID }, model.Project);
         }
 
-        // DELETE: api/Projects/5
-        [HttpDelete("{id}")]
+        //-----------------------------------------------------------------------//
+
+        // DELETE
+
+        // DELETE: api/Projects/DeleteProject/1
+        // This API deletes a specific Project with {id}
+        [Route("api/Projects/DeleteProject")]
+        [HttpDelete("DeleteProject/{id}")]
         public async Task<IActionResult> DeleteProject(int id)
         {
             var project = await _context.Projects.FindAsync(id);
@@ -167,7 +198,7 @@ namespace BAIA.Controllers
             _context.Projects.Remove(project);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         private bool ProjectExists(int id)
