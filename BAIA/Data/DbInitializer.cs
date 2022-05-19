@@ -37,7 +37,7 @@ namespace BAIA.Data
                 new Project{ProjectTitle="Instagram",ProjectDescription="It's a social media.....",Domain="Social Media",OrganizationName="Meta", SystemActors="End-USer" , User=users[3]},
                 new Project{ProjectTitle="BAIA",ProjectDescription="It's an Assistant for BAs who.....",Domain="Not Specified",OrganizationName="FCIS", SystemActors="BA,StackHolder" ,User=users[5]}
             };
-            foreach (Project p in projects)
+            foreach (Project p in projects) // Projects are added in reverse!!
             {
                 context.Projects.Add(p);
             }

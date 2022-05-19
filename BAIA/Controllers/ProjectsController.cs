@@ -35,7 +35,7 @@ namespace BAIA.Controllers
         [EnableCors]
         public async Task<ActionResult<IEnumerable<Project>>> GetAllProjects()
         {
-            return await _context.Projects.Include(p => p.Meetings).ToListAsync();
+            return await _context.Projects.ToListAsync();
         }
 
         // GET: api/Projects/GetMeetingTitles/4
@@ -71,7 +71,7 @@ namespace BAIA.Controllers
             }
         }
 
-        // GET: api/Projects/5
+        // GET: api/Projects/GetProject/5
         // This API returns Project with {id} including it's Meetings
         [Route("api/Projects/GetProject")]
         [HttpGet("GetProject/{id}")]
@@ -91,7 +91,7 @@ namespace BAIA.Controllers
         }
 
 
-        // GET: api/Projects/GetProjectByTitle/First Meeting
+        // GET: api/Projects/GetProjectByTitle/Facebook
         // This API returns Project with specific {title} including it's Meetings
         [Route("api/Projects/GetProjectByTitle")]
         [HttpGet("GetProjectByTitle/{title}")]
