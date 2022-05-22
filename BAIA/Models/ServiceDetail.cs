@@ -11,7 +11,7 @@ namespace BAIA.Models
     {
         public int ServiceDetailID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Service Detail is required")]
         public string ServiceDetailString { get; set; }
         public string Timestamp { get; set; }
 

@@ -38,9 +38,9 @@ namespace BAIA.Controllers
             return await _context.Services.ToListAsync();
         }
 
-        // GET: api/Service/1
+        // GET: api/Services/GetService/1
         // This API returns Service with {id}
-        [Route("api/Services/GetAllServices")]
+        [Route("api/Services/GetService")]
         [HttpGet("GetService/{id}")]
         [EnableCors]
         public async Task<ActionResult<Service>> GetService(int id)
@@ -54,15 +54,17 @@ namespace BAIA.Controllers
 
             return service;
         }
+        
+        //-----------------------------------------------------------------------//
 
         // UPDATE
 
         // PUT: api/Services/UpdateService/1
-        // This API updates User's data related to Service with {id}
-        // Must send User Object in Body
+        // This API updates data related to Service with {id}
+        // Must send Service Object in Body
 
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Route("api/Users/UpdateService")]
+        [Route("api/Services/UpdateService")]
         [HttpPut("UpdateService/{id}")]
         [EnableCors]
         public async Task<ActionResult<Service>> UpdateService(int id, Service service)
@@ -89,26 +91,82 @@ namespace BAIA.Controllers
                     throw;
                 }
             }
-
-            return await _context.Services.FirstOrDefaultAsync(x => x.ServiceID == id); ;
-            
+            var updatedService = await _context.Services.FirstOrDefaultAsync(x => x.ServiceID == id);
+            return updatedService;
         }
 
-        // POST: api/Services
+        //-----------------------------------------------------------------------//
+
+        // CREATE
+
+        // POST: api/Services/PostService
+        // This API creates a new Service
+        // Must send Service object and MeetingID in Body
+
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [Route("api/Services/PostService")]
+        [HttpPost("PostService")]
         [EnableCors]
-
-        public async Task<ActionResult<Service>> PostService(Service service)
+        public async Task<ActionResult<Service>> PostService([FromBody] AddServiceModel model)
         {
-            _context.Services.Add(service);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetService", new { id = service.ServiceID }, service);
+            /*if (_context.Services.FirstOrDefault(x => x.ServiceTitle == model.Service.ServiceTitle) != null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                model.Service.Meeting = _context.Meetings.FirstOrDefault(x => x.MeetingID == model.MeetingID);
+                _context.Services.Add(model.Service);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction("GetService", new { id = model.Service.ServiceID }, model.Service);
+            }*/
+
+            var meeting = _context.Meetings.Include(m => m.Services).FirstOrDefault(x => x.MeetingID == model.MeetingID);
+            if (meeting == null)
+            {
+                return NotFound();
+            }
+            var services = meeting.Services.ToList();
+            bool serviceAlreadyExist = false;
+            foreach (Service s in services)
+            {
+                if (s.ServiceTitle == model.Service.ServiceTitle)
+                {
+                    serviceAlreadyExist = true;
+                    break;
+                }
+            }
+            if (serviceAlreadyExist == true)
+            {
+                return BadRequest();
+            }
+            try
+            {
+                model.Service.Meeting = _context.Meetings.FirstOrDefault(x => x.MeetingID == model.MeetingID);
+                _context.Services.Add(model.Service);
+                await _context.SaveChangesAsync();
+
+            }
+            catch (Exception e)
+            {
+                Console.Out.WriteLine(e.ToString());
+                return StatusCode(500);
+            }
+
+            return CreatedAtAction("GetService", new { id = model.Service.ServiceID }, model.Service);
+
         }
 
-        // DELETE: api/Services/5
-        [HttpDelete("{id}")]
+        //-----------------------------------------------------------------------//
+
+        // DELETE
+
+        // DELETE: api/Services/DeleteService/1
+        // This API deletes a specific Service with {id}
+        [Route("api/Services/DeleteService")]
+        [HttpDelete("DeleteService/{id}")]
+        [EnableCors]
         public async Task<IActionResult> DeleteService(int id)
         {
             var service = await _context.Services.FindAsync(id);
@@ -120,7 +178,7 @@ namespace BAIA.Controllers
             _context.Services.Remove(service);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         private bool ServiceExists(int id)

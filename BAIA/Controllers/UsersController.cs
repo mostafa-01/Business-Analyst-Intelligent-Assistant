@@ -37,14 +37,13 @@ namespace BAIA.Controllers
         public async Task<ActionResult<IEnumerable<string>>> GetProjectTitles(int id)
         {
 
-            var User = new User();
-            User = await _context.Users.Include(p => p.Projects).FirstOrDefaultAsync(x => x.UserID == id);
-            if (User == null)
+            var user = await _context.Users.Include(p => p.Projects).FirstOrDefaultAsync(x => x.UserID == id);
+            if (user == null)
                 return NoContent();
             else
             {
                 List<string> ProjectTitles = new List<string>();
-                var projects = User.Projects.ToList();
+                var projects = user.Projects.ToList();
                 foreach (Project project in projects)
                 {
                     ProjectTitles.Add(project.ProjectTitle);
@@ -66,7 +65,7 @@ namespace BAIA.Controllers
         }
         */
 
-        // GET: api/Users 
+        // GET: api/Users/GetAllUsers
         // This API returns all Users in Database
         [Route("api/Users/GetAllUsers")]
         [HttpGet("GetAllUsers")]
@@ -76,8 +75,8 @@ namespace BAIA.Controllers
             return await _context.Users.ToListAsync();
         }
 
-        // GET: api/Users/5
-        // This API returns User's data related to User with {id}
+        // GET: api/Users//GetUser/5
+        // This API returns data related to User with {id}
         [Route("api/Users/GetUser")]
         [HttpGet("GetUser/{id}")]
         [EnableCors]
@@ -117,20 +116,32 @@ namespace BAIA.Controllers
         // UPDATE
 
         // PUT: api/Users/UpdateUser/1
-        // This API updates User's data related to User with {id}
+        // This API updates data related to User with {id}
         // Must send User Object in Body
-
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Route("api/Users/UpdateUser")]
         [HttpPut("UpdateUser/{id}")]
         [EnableCors]
         public async Task<ActionResult<User>> UpdateUser(int id, User user)
         {
+
             if (id != user.UserID)
             {
                 return BadRequest();
             }
 
+            /*string emailBefore = _context.Users.FirstOrDefault(x => x.UserID == id).Email;
+            string emailAfter = user.Email;
+            if (emailAfter != emailBefore)
+            {
+                var newEmailAlreadyExist = await _context.Users.FirstOrDefaultAsync(x => x.Email == user.Email);
+                if (newEmailAlreadyExist!= null)
+                {
+                    return BadRequest();
+                }
+
+
+            }*/
             _context.Entry(user).State = EntityState.Modified; // Used to detect changes and apply it if found
 
             try
@@ -149,7 +160,8 @@ namespace BAIA.Controllers
                 }
             }
 
-            return await _context.Users.FirstOrDefaultAsync(x => x.UserID == id); ;
+            var updatedUser = await _context.Users.FirstOrDefaultAsync(x => x.UserID == id);
+            return updatedUser;
         }
 
         //-----------------------------------------------------------------------//
@@ -159,9 +171,7 @@ namespace BAIA.Controllers
         // POST: api/Users/PostUser
         // This API creates a new User
         // Must send User Object in Body
-
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-
         [Route("api/Users/PostUser")]
         [HttpPost("PostUser")]
         [EnableCors]
@@ -174,7 +184,7 @@ namespace BAIA.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.UserID }, user); // Return new User location (api/Users/idOfNewUser) in the header
+            return CreatedAtAction("GetUser", new { id = user.UserID }, user); // Return new User location (api/Users/GetUser/idOfNewUser) in the header
         }
 
         //-----------------------------------------------------------------------//

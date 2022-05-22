@@ -39,14 +39,13 @@ namespace BAIA.Controllers
         }
 
         // GET: api/Projects/GetMeetingTitles/4
-        // This API returns all Meetings Titles in Database with Project {id}
+        // This API returns all Meeting Titles in Database with Project {id}
         [Route("api/Projects/GetMeetingTitles")]
         [HttpGet("GetMeetingTitles/{id}")]
         [EnableCors]
         public async Task<ActionResult<List<string>>> GetMeetingTitles(int id)
         {
-            var project = new Project();
-            project = await _context.Projects.Include(p => p.Meetings).FirstOrDefaultAsync(x => x.ProjectID == id);
+            var project = await _context.Projects.Include(p => p.Meetings).FirstOrDefaultAsync(x => x.ProjectID == id);
             if (project == null)
                 return NoContent();
             else
@@ -114,7 +113,7 @@ namespace BAIA.Controllers
         // UPDATE
 
         // PUT: api/Projects/UpdateProject/5
-        // This API updates Project's data related to Project with {id}
+        // This API updates data related to Project with {id}
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Route("api/Projects/UpdateProject")]
         [HttpPut("UpdateProject/{id}")]
@@ -143,7 +142,8 @@ namespace BAIA.Controllers
                     throw;
                 }
             }
-            return await _context.Projects.FirstOrDefaultAsync(x => x.ProjectID == id); ;
+            var updatedProject = await _context.Projects.FirstOrDefaultAsync(x => x.ProjectID == id);
+            return updatedProject;
 
         }
 
@@ -159,7 +159,22 @@ namespace BAIA.Controllers
         [EnableCors]
         public async Task<ActionResult<Project>> PostProject([FromBody] AddProjectModel model)
         {
-            if (_context.Projects.FirstOrDefault(x => x.ProjectTitle == model.Project.ProjectTitle) != null)
+            var user = _context.Users.Include(u => u.Projects).FirstOrDefault(x => x.UserID == model.UserID);
+            if(user == null)
+            {
+                return NotFound();
+            }
+            var projects = user.Projects.ToList();
+            bool projectAlreadyExist = false;
+            foreach(Project p in projects)
+            {
+                if(p.ProjectTitle == model.Project.ProjectTitle)
+                {
+                    projectAlreadyExist = true;
+                    break;
+                }
+            }
+            if (projectAlreadyExist==true)
             {
                 return BadRequest();
             }
@@ -189,7 +204,7 @@ namespace BAIA.Controllers
         [HttpDelete("DeleteProject/{id}")]
         public async Task<IActionResult> DeleteProject(int id)
         {
-            var project = await _context.Projects.FindAsync(id);
+            var project = await _context.Projects.FirstOrDefaultAsync(x => x.ProjectID == id);
             if (project == null)
             {
                 return NotFound();

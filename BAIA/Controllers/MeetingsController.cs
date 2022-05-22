@@ -122,7 +122,8 @@ namespace BAIA.Controllers
         */
 
         // GET: api/Meetings/GetMeeting/1
-        // This API gets Services of a specific Meeting with {id} it includes Services and Service Details
+        // This API gets data of a specific Meeting with {id}
+        // It includes Services and Service Details
         [Route("api/Meetings/GetMeeting")]
         [HttpGet("GetMeeting/{id}")]
         [EnableCors]
@@ -146,12 +147,12 @@ namespace BAIA.Controllers
         // UPDATE
 
         // PUT: api/Meetings/UpdateMeeting/5
-        // This API updates a specific Meeting details for Meeting with {id}
+        // This API updates data related to Meeting with {id}
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Route("api/Meetings/UpdateMeeting")]
         [HttpPut("UpdateMeeting/{id}")]
         [EnableCors]
-        public async Task<IActionResult> UpdateMeeting(int id, Meeting meeting)
+        public async Task<ActionResult<Meeting>> UpdateMeeting(int id, Meeting meeting)
         {
             if (id != meeting.MeetingID)
             {
@@ -175,8 +176,8 @@ namespace BAIA.Controllers
                     throw;
                 }
             }
-
-            return Ok();
+            var updatedMeeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == id);
+            return updatedMeeting;
         }
 
         //-----------------------------------------------------------------------//
@@ -192,16 +193,39 @@ namespace BAIA.Controllers
         [EnableCors]
         public async Task<ActionResult<Meeting>> PostMeeting([FromBody] AddMeetingModel model)
         {
+            var project = _context.Projects.Include(p => p.Meetings).FirstOrDefault(x => x.ProjectID == model.ProjectID);
+            if (project == null)
+            {
+                return NotFound();
+            }
+            var meetings = project.Meetings.ToList();
+            bool meetingAlreadyExist = false;
+            foreach (Meeting m in meetings)
+            {
+                if (m.MeetingTitle == model.Meeting.MeetingTitle)
+                {
+                    meetingAlreadyExist = true;
+                    break;
+                }
+            }
+            if (meetingAlreadyExist == true)
+            {
+                return BadRequest();
+            }
             try
             {
                 model.Meeting.Project = _context.Projects.FirstOrDefault(x => x.ProjectID == model.ProjectID);
 
                 var client = new RestClient($"http://127.0.0.1:5000/");
                 var request = new RestRequest("meetingscript", Method.Post);
-                request.AddJsonBody(new { filepath = model.Meeting.AudioReference});
+                request.AddJsonBody(new { filepath = model.Meeting.AudioReference,
+                    projectTitle = model.Meeting.Project.ProjectTitle,
+                    domain = model.Meeting.Project.Domain,
+                    actors= model.Meeting.MeetingPersonnel,
+                    meetingTitle=model.Meeting.MeetingTitle});
                 RestResponse response = await client.ExecuteAsync(request);
                 if (response.Content == null)
-                    return BadRequest();
+                    return NoContent();
                 model.Meeting.ASR_Text = response.Content;
 
                 _context.Meetings.Add(model.Meeting);
@@ -222,7 +246,7 @@ namespace BAIA.Controllers
         // DELETE: api/Meetings/DeleteMeeting/1
         // This API deletes a specific Meeting with {id}
         [Route("api/Meetings/DeleteMeeting")]
-        [HttpPut("DeleteMeeting/{id}")]
+        [HttpDelete("DeleteMeeting/{id}")]
         [EnableCors]
         public async Task<ActionResult<Meeting>> DeleteMeeting(int id)
         {
@@ -235,7 +259,7 @@ namespace BAIA.Controllers
             _context.Meetings.Remove(meeting);
             await _context.SaveChangesAsync();
 
-            return await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == id); ;
+            return Ok();
         }
 
         private bool MeetingExists(int id)
