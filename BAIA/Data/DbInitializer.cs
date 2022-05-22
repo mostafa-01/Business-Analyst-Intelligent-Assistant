@@ -49,6 +49,18 @@ namespace BAIA.Data
                     MeetingPersonnel="Ahmed Elsayed, Mohamed Ahmed",
                     AudioReference="ASRModule/audio_wac/batoul_meeting.wav",
                     ASR_Text="Speaker A: Good afternoon, it's a pleasure to meet with you today sirSpeaker B: the pleasure is mine",
+                    Project=projects[0] },
+                new Meeting{MeetingTitle="Second Meeting",
+                    MeetingDescription="In this meeting we talked about.....",
+                    MeetingPersonnel="Ahmed Elmohamady, Mohamed Sayed",
+                    AudioReference="ASRModule/audio_wac/batoul_meeting.wav",
+                    ASR_Text="Speaker A: Good afternoon, it's a pleasure to meet with you today sirSpeaker B: the pleasure is mine",
+                    Project=projects[0] },
+                new Meeting{MeetingTitle="Third Meeting",
+                    MeetingDescription="In this meeting we talked about.....",
+                    MeetingPersonnel="Hamdy Elsayed, Youssef Ahmed",
+                    AudioReference="ASRModule/audio_wac/batoul_meeting.wav",
+                    ASR_Text="Speaker A: Good afternoon, it's a pleasure to meet with you today sirSpeaker B: the pleasure is mine",
                     Project=projects[0] }
             };
             foreach (Meeting m in meetings)
