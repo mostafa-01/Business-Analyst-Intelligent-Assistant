@@ -24,15 +24,25 @@ namespace BAIA.Controllers
             _context = context;
         }
 
-        // GET: api/ServiceDetails
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<ServiceDetail>>> GetServiceDetails()
+        //-----------------------------------------------------------------------//
+
+        // READ
+
+        // GET: api/ServiceDetails/GetAllServiceDetails
+        // This API returns all ServiceDetails in Database
+        [Route("api/ServiceDetails/GetAllServiceDetails")]
+        [HttpGet("GetAllServiceDetails")]
+        [EnableCors]
+        public async Task<ActionResult<IEnumerable<ServiceDetail>>> GetAllServiceDetails()
         {
             return await _context.ServiceDetails.ToListAsync();
         }
 
-        // GET: api/ServiceDetails/5
-        [HttpGet("{id}")]
+        // GET: api/ServiceDetails/GetServiceDetail/1
+        // This API returns data of ServiceDetail with {id}
+        [Route("api/ServiceDetails/GetServiceDetail")]
+        [HttpGet("GetServiceDetail/{id}")]
+        [EnableCors]
         public async Task<ActionResult<ServiceDetail>> GetServiceDetail(int id)
         {
             var serviceDetail = await _context.ServiceDetails.FindAsync(id);
@@ -45,10 +55,19 @@ namespace BAIA.Controllers
             return serviceDetail;
         }
 
-        // PUT: api/ServiceDetails/5
+        //-----------------------------------------------------------------------//
+
+        // UPDATE
+
+        // PUT: api/ServiceDetails/UpdateServiceDetail/1
+        // This API updates data related to ServiceDetail with {id}
+        // Must send ServiceDetail Object in Body
+
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutServiceDetail(int id, ServiceDetail serviceDetail)
+        [Route("api/ServiceDetails/UpdateServiceDetail")]
+        [HttpPut("UpdateServiceDetail/{id}")]
+        [EnableCors]
+        public async Task<ActionResult<ServiceDetail>> UpdateServiceDetail(int id, ServiceDetail serviceDetail)
         {
             if (id != serviceDetail.ServiceDetailID)
             {
@@ -73,23 +92,69 @@ namespace BAIA.Controllers
                 }
             }
 
-            return NoContent();
+            var updatedServiceDetail = await _context.ServiceDetails.FirstOrDefaultAsync(x => x.ServiceDetailID == id);
+            return updatedServiceDetail;
         }
 
-        // POST: api/ServiceDetails
+        //-----------------------------------------------------------------------//
+
+        // CREATE
+
+        // POST: api/ServiceDetails/PostServiceDetail
+        // This API creates a new ServiceDetail
+        // Must send ServiceDetail object and ServiceID in Body
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [Route("api/ServiceDetails/PostServiceDetail")]
+        [HttpPost("PostServiceDetail")]
         [EnableCors]
-        public async Task<ActionResult<ServiceDetail>> PostServiceDetail(ServiceDetail serviceDetail)
+        public async Task<ActionResult<ServiceDetail>> PostServiceDetail([FromBody] AddServiceDetailModel model)
         {
-            _context.ServiceDetails.Add(serviceDetail);
-            await _context.SaveChangesAsync();
+            var service = _context.Services.Include(s => s.ServiceDetails).FirstOrDefault(x => x.ServiceID == model.ServiceID);
+            if (service == null)
+            {
+                return NotFound();
+            }
+            var serviceDetails = service.ServiceDetails.ToList();
+            bool serviceDetailAlreadyExist = false;
+            foreach (ServiceDetail sd in serviceDetails)
+            {
+                if (sd.ServiceDetailString == model.ServiceDetail.ServiceDetailString)
+                {
+                    serviceDetailAlreadyExist = true;
+                    break;
+                }
+            }
+            if (serviceDetailAlreadyExist == true)
+            {
+                return BadRequest();
+            }
+            try
+            {
+                model.ServiceDetail.Service = _context.Services.FirstOrDefault(x => x.ServiceID == model.ServiceID);
+                _context.ServiceDetails.Add(model.ServiceDetail);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetServiceDetail", new { id = serviceDetail.ServiceDetailID }, serviceDetail);
+            }
+            catch (Exception e)
+            {
+                Console.Out.WriteLine(e.ToString());
+                return StatusCode(500);
+            }
+
+
+            return CreatedAtAction("GetServiceDetail", new { id = model.ServiceDetail.ServiceDetailID }, model.ServiceDetail);
         }
+
+
+        //-----------------------------------------------------------------------//
+
+        // DELETE
 
         // DELETE: api/ServiceDetails/5
-        [HttpDelete("{id}")]
+        // This API deletes a specific ServiceDetail with {id}
+        [Route("api/ServiceDetails/DeleteServiceDetail")]
+        [HttpDelete("DeleteServiceDetail/{id}")]
+        [EnableCors]
         public async Task<IActionResult> DeleteServiceDetail(int id)
         {
             var serviceDetail = await _context.ServiceDetails.FindAsync(id);
@@ -101,7 +166,7 @@ namespace BAIA.Controllers
             _context.ServiceDetails.Remove(serviceDetail);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         private bool ServiceDetailExists(int id)

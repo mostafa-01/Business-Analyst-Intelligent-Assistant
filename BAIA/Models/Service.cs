@@ -11,7 +11,7 @@ namespace BAIA.Models
     {
         public int ServiceID { get; set; }
         
-        [Required]
+        [Required(ErrorMessage = "Service Title is required")]
         public string ServiceTitle { get; set; }
 
         public virtual IList<ServiceDetail> ServiceDetails { get; set; }
