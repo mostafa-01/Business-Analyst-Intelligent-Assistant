@@ -164,17 +164,8 @@ namespace BAIA.Controllers
             {
                 return NotFound();
             }
-            var projects = user.Projects.ToList();
-            bool projectAlreadyExist = false;
-            foreach(Project p in projects)
-            {
-                if(p.ProjectTitle == model.Project.ProjectTitle)
-                {
-                    projectAlreadyExist = true;
-                    break;
-                }
-            }
-            if (projectAlreadyExist==true)
+            var project = _context.Projects.FirstOrDefault(p => p.ProjectTitle == model.Project.ProjectTitle);
+            if (project != null)
             {
                 return BadRequest();
             }
