@@ -218,16 +218,19 @@ namespace BAIA.Controllers
 
                 var client = new RestClient($"http://127.0.0.1:5000/");
                 var request = new RestRequest("meetingscript", Method.Post);
-                request.AddJsonBody(new { filepath = model.Meeting.AudioReference,
+                request.AddJsonBody(new
+                {
+                    filepath = model.Meeting.AudioReference,
                     projectTitle = model.Meeting.Project.ProjectTitle,
                     domain = model.Meeting.Project.Domain,
-                    actors= model.Meeting.MeetingPersonnel,
-                    meetingTitle=model.Meeting.MeetingTitle});
+                    actors = model.Meeting.MeetingPersonnel,
+                    meetingTitle = model.Meeting.MeetingTitle
+                });
                 RestResponse response = await client.ExecuteAsync(request);
                 if (response.Content == null)
                     return NoContent();
                 model.Meeting.ASR_Text = response.Content;
-
+                
                 _context.Meetings.Add(model.Meeting);
                 await _context.SaveChangesAsync();
             }
@@ -266,6 +269,26 @@ namespace BAIA.Controllers
         {
             return _context.Meetings.Any(e => e.MeetingID == id);
         }
+
+        /*private async Task<ActionResult<string>> GetASR_Text(string AudioReference, string ProjectTitle, string Domain,
+            string MeetingPersonnel, string MeetingTitle)
+        {
+            var client = new RestClient($"http://127.0.0.1:5000/");
+            var request = new RestRequest("meetingscript", Method.Post);
+            request.AddJsonBody(new
+            {
+                filepath = AudioReference,
+                projectTitle = ProjectTitle,
+                domain = Domain,
+                actors = MeetingPersonnel,
+                meetingTitle = MeetingTitle
+            });
+            RestResponse response = await client.ExecuteAsync(request);
+            if (response.Content == null)
+                return null;
+            else
+                return Content(response.Content);
+        }*/
 
         /*private Dictionary<string, List<string>> ToKeyValue(string content)
         {

@@ -23,8 +23,6 @@ namespace BAIA.Models
 
         public string ASR_Text { get; set; }
 
-        public virtual IList<sentsTimestamp> sentsTimestamp { get; set; }
-
         public virtual Project Project { get; set; }
 
         public virtual IList<Service> Services { get; set; }
