@@ -224,7 +224,8 @@ namespace BAIA.Controllers
                     projectTitle = model.Meeting.Project.ProjectTitle,
                     domain = model.Meeting.Project.Domain,
                     actors = model.Meeting.MeetingPersonnel,
-                    meetingTitle = model.Meeting.MeetingTitle
+                    meetingTitle = model.Meeting.MeetingTitle,
+                    meetingID = model.Meeting.MeetingID
                 });
                 RestResponse response = await client.ExecuteAsync(request);
                 if (response.Content == null)
