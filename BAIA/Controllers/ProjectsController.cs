@@ -70,6 +70,55 @@ namespace BAIA.Controllers
             }
         }
 
+
+        //Get: api/Projects/GenerateAsIs/4
+        //this api returns all the verified services and its detalis in a list of tuples --> [{serviceTitle1 , {deatails1 , details2}}]
+        [Route("api/Projects/GenerateAsIs")]
+        [HttpGet("GenerateAsIs/{id}")]
+        [EnableCors]
+        public async Task<ActionResult<Dictionary<string, List<string>>>> GenerateAsIs(int id)
+        {
+            var project = await _context.Projects
+                .Include(m => m.Meetings)
+                .ThenInclude(s => s.Services)
+                .ThenInclude(d => d.ServiceDetails)
+                .FirstOrDefaultAsync(p => p.ProjectID == id);
+            if (project == null)
+                return NoContent();
+            else
+            {
+                try
+                {
+
+                    // Tuple<string, List<string>> listnode = new Tuple<string,List<string>>; 
+                    Dictionary<string, List<string>> AsIs = new Dictionary<string, List<string>>();
+                    foreach (Meeting M in project.Meetings)
+                    {
+                        foreach (Service S in M.Services)
+                        {
+                            List<string> details = new List<string>();
+                            if (S.ServiceVerified == true)
+                            {
+                                foreach (var SD in S.ServiceDetails)
+                                {
+                                    details.Add(SD.ServiceDetailString);
+                                }
+                            }
+
+                            AsIs.Add(S.ServiceTitle, details);
+                        }
+                    }
+                    return AsIs;
+                }
+                catch (Exception ex)
+                {
+                    Console.Out.WriteLine(ex.ToString());
+                    return StatusCode(500);
+                }
+            }
+        } 
+
+
         // GET: api/Projects/GetProject/5
         // This API returns Project with {id} including it's Meetings
         [Route("api/Projects/GetProject")]
