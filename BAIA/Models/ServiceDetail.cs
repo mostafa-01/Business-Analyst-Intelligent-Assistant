@@ -14,10 +14,6 @@ namespace BAIA.Models
         [Required(ErrorMessage = "Service Detail is required")]
         public string ServiceDetailString { get; set; }
         public string Timestamp { get; set; }
-
-        [DefaultValue(false)]
-        public bool ServiceDetailVerified { get; set; }
-
         public virtual Service Service { get; set; }
     }
 }
