@@ -103,9 +103,10 @@ namespace BAIA.Controllers
                                 {
                                     details.Add(SD.ServiceDetailString);
                                 }
-                            }
 
-                            AsIs.Add(S.ServiceTitle, details);
+
+                                AsIs.Add(S.ServiceTitle, details);
+                            }
                         }
                     }
                     return AsIs;
