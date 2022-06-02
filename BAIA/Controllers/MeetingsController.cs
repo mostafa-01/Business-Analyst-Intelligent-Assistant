@@ -274,6 +274,7 @@ namespace BAIA.Controllers
         //Get: api/Projects/GenerateServices/5
         [Route("api/Meetings/GenerateServices")]
         [HttpGet("GenerateServices/{id}")]
+        [EnableCors]
         public async Task<ActionResult<Dictionary<string, List<Tuple<string, int>>>>> GenerateServices(int id)
         {
             var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == id);
@@ -292,9 +293,9 @@ namespace BAIA.Controllers
                         meetingID = id
                     });
                     request.AddHeader("content-type", "application/json");
-                    var response = await client.ExecuteAsync(request);
+                    RestResponse response = await client.ExecuteAsync(request);
 
-                    if (!response.IsSuccessful)
+                    if (response.Content == null)
                         return BadRequest();
 
                     var content = response.Content;
@@ -325,11 +326,11 @@ namespace BAIA.Controllers
                                 Service = srvc
                             };
 
-                            _context.ServiceDetails.Add(srvcDet);
+                            //_context.ServiceDetails.Add(srvcDet);
                             srvc.ServiceDetails.Add(srvcDet);
                         }
                         meeting.Services.Add(srvc);
-                        _context.Services.Add(srvc);
+                        //_context.Services.Add(srvc);
 
                     }
                     await _context.SaveChangesAsync();

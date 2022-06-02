@@ -10,7 +10,7 @@ namespace BAIA.Data
     {
         public static void Initialize(BAIA_DB_Context context)
         {
-            context.Database.EnsureDeleted();
+            //context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
             if (context.Users.Any())
             {
@@ -33,7 +33,7 @@ namespace BAIA.Data
             var projects = new Project[]
             {
                 new Project{ProjectTitle="Spotify Music Player",ProjectDescription="It's a music player.....",Domain="Music Players",OrganizationName="Spotify",SystemActors="End-User" , User=users[0]},
-                new Project{ProjectTitle="Facebook",ProjectDescription="It's a social media.....",Domain="Social Media",OrganizationName="Meta",SystemActors="End-User" , User=users[1]},
+                new Project{ProjectTitle="Facebook",ProjectDescription="It's a social media.....",Domain="Social Media",OrganizationName="Meta",SystemActors="End-User" , User=users[0]},
                 new Project{ProjectTitle="Instagram",ProjectDescription="It's a social media.....",Domain="Social Media",OrganizationName="Meta", SystemActors="End-User" , User=users[3]},
                 new Project{ProjectTitle="BAIA",ProjectDescription="It's an Assistant for BAs who.....",Domain="Not Specified",OrganizationName="FCIS", SystemActors="BA,StackHolder" ,User=users[5]}
             };
