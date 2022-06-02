@@ -291,7 +291,7 @@ namespace BAIA.Controllers
                         meetingscript = meeting.ASR_Text,
                         actors = meeting.MeetingPersonnel,
                         meetingTitle = meeting.MeetingTitle,
-                        projectID = meeting.Project.ProjectID
+                        //projectID = meeting.Project.ProjectID
                     });
                     request.AddHeader("content-type", "application/json");
                     RestResponse response = await client.ExecuteAsync(request);
@@ -314,7 +314,7 @@ namespace BAIA.Controllers
                         };
                         _context.Services.Add(srvc);
                         await _context.SaveChangesAsync();
-                        srvc = _context.Services.Last();
+                        srvc = _context.Services.FirstOrDefault(s => s.ServiceID == _context.Services.Select(g => g.ServiceID).Max());
                         foreach (var srvcDetail in service.serviceDetails)
                         {
                             int tsNum = Int32.Parse(srvcDetail.Timestamp);
