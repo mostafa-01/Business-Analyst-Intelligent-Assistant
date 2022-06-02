@@ -127,7 +127,8 @@ namespace BAIA.Controllers
             {
                 return NotFound();
             }
-            var services = meeting.Services.ToList();
+
+            /*var services = meeting.Services.ToList();
             bool serviceAlreadyExist = false;
             foreach (Service s in services)
             {
@@ -140,10 +141,10 @@ namespace BAIA.Controllers
             if (serviceAlreadyExist == true)
             {
                 return BadRequest();
-            }
+            }*/
             try
             {
-                model.Service.Meeting = _context.Meetings.FirstOrDefault(x => x.MeetingID == model.MeetingID);
+                model.Service.Meeting = meeting;
                 _context.Services.Add(model.Service);
                 await _context.SaveChangesAsync();
 
@@ -186,4 +187,6 @@ namespace BAIA.Controllers
             return _context.Services.Any(e => e.ServiceID == id);
         }
     }
+
+
 }

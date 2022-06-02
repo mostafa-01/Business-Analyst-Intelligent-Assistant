@@ -231,7 +231,7 @@ namespace BAIA.Controllers
                 if (response.Content == null)
                     return NoContent();
                 model.Meeting.ASR_Text = response.Content;
-                
+
                 _context.Meetings.Add(model.Meeting);
                 await _context.SaveChangesAsync();
             }
@@ -269,6 +269,78 @@ namespace BAIA.Controllers
         private bool MeetingExists(int id)
         {
             return _context.Meetings.Any(e => e.MeetingID == id);
+        }
+
+        //Get: api/Projects/GenerateServices/5
+        [Route("api/Meetings/GenerateServices")]
+        [HttpGet("GenerateServices/{id}")]
+        public async Task<ActionResult<Dictionary<string, List<Tuple<string, int>>>>> GenerateServices(int id)
+        {
+            var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == id);
+            if (meeting == null)
+                return NoContent();
+            else
+            {
+                try
+                {
+                    var client = new RestClient($"http://127.0.0.1:5000/");
+                    var request = new RestRequest("services", Method.Post);
+                    request.AddJsonBody(new
+                    {
+                        meetingscript = meeting.ASR_Text,
+                        actors = meeting.MeetingPersonnel,
+                        meetingID = id
+                    });
+                    request.AddHeader("content-type", "application/json");
+                    var response = await client.ExecuteAsync(request);
+
+                    if (!response.IsSuccessful)
+                        return BadRequest();
+
+                    var content = response.Content;
+                    Dictionary<string, List<Tuple<string, int>>> ServicesDic =
+                        new Dictionary<string, List<Tuple<string, int>>>();
+                    ServicesDic = JsonSerializer
+                        .Deserialize<Dictionary<string, List<Tuple<string, int>>>>(content);
+
+                    foreach (var keyval in ServicesDic)
+                    {
+                        Service srvc = new Service
+                        {
+                            ServiceTitle = keyval.Key,
+                            Meeting = meeting
+                        };
+                        foreach (var val in keyval.Value)
+                        {
+                            TimeSpan t = TimeSpan.FromSeconds(val.Item2);
+                            string ts = string.Format("{0:D2}h:{1:D2}m:{2:D2}s",
+                                            t.Hours,
+                                            t.Minutes,
+                                            t.Seconds);
+
+                            ServiceDetail srvcDet = new ServiceDetail
+                            {
+                                ServiceDetailString = val.Item1,
+                                Timestamp = ts,
+                                Service = srvc
+                            };
+
+                            _context.ServiceDetails.Add(srvcDet);
+                            srvc.ServiceDetails.Add(srvcDet);
+                        }
+                        meeting.Services.Add(srvc);
+                        _context.Services.Add(srvc);
+
+                    }
+                    await _context.SaveChangesAsync();
+                    return ServicesDic;
+                }
+                catch (Exception e)
+                {
+                    return Content(e.ToString() + StatusCode(500));
+                    //return StatusCode(500);
+                }
+            }
         }
 
         /*private async Task<ActionResult<string>> GetASR_Text(string AudioReference, string ProjectTitle, string Domain,

@@ -261,5 +261,31 @@ namespace BAIA.Controllers
         {
             return _context.Projects.Any(e => e.ProjectID == id);
         }
+
+        [Route("api/Projects/DetectConflicts")]
+        [HttpGet("DetectConflicts/{id}")]
+        [EnableCors]
+        public async Task<ActionResult<Project>> DetectConflicts(int id)
+        {
+            var project = await _context.Projects
+                .Include(p => p.Meetings)
+                .ThenInclude(m => m.Services)
+                .ThenInclude(s => s.ServiceDetails).FirstOrDefaultAsync(p => p.ProjectID == id);
+            if (project == null)
+            {
+                return BadRequest();
+            }
+            try
+            {
+
+                return project;
+            }
+            catch (Exception e)
+            {
+                Console.Out.WriteLine(e.ToString());
+                return StatusCode(500);
+            }
+
+        }
     }
 }

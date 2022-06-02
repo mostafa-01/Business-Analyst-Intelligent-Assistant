@@ -109,12 +109,12 @@ namespace BAIA.Controllers
         [EnableCors]
         public async Task<ActionResult<ServiceDetail>> PostServiceDetail([FromBody] AddServiceDetailModel model)
         {
-            var service = _context.Services.Include(s => s.ServiceDetails).FirstOrDefault(x => x.ServiceID == model.ServiceID);
+            var service = _context.Services.FirstOrDefault(x => x.ServiceID == model.ServiceID);
             if (service == null)
             {
                 return NotFound();
             }
-            var serviceDetails = service.ServiceDetails.ToList();
+            /*var serviceDetails = service.ServiceDetails.ToList();
             bool serviceDetailAlreadyExist = false;
             foreach (ServiceDetail sd in serviceDetails)
             {
@@ -127,10 +127,10 @@ namespace BAIA.Controllers
             if (serviceDetailAlreadyExist == true)
             {
                 return BadRequest();
-            }
+            }*/
             try
             {
-                model.ServiceDetail.Service = _context.Services.FirstOrDefault(x => x.ServiceID == model.ServiceID);
+                model.ServiceDetail.Service = service;
                 _context.ServiceDetails.Add(model.ServiceDetail);
                 await _context.SaveChangesAsync();
 
