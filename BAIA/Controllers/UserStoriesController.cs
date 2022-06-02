@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BAIA.Data;
 using BAIA.Models;
 using Microsoft.AspNetCore.Cors;
+using RestSharp;
 
 namespace BAIA.Controllers
 {
@@ -43,6 +44,56 @@ namespace BAIA.Controllers
             }
 
             return userStory;
+        }
+
+        /// <summary>
+        /// implement here get user stories
+        /// </summary>
+        /// <param name="projectid"></param>
+        /// <returns>Ilist<UserStories></UserStories></returns>
+
+
+
+        [Route("api/UserStories/GenerateManually")]
+        [HttpGet("GenerateManually")]
+        [EnableCors]
+        public async Task<ActionResult> GenerateManually([FromBody] GenerateUSModel model)
+        {
+            Project pj =await _context.Projects
+                .Include(m => m.Meetings)
+                .ThenInclude(s => s.Services)
+                .ThenInclude(d => d.ServiceDetails)
+                .FirstOrDefaultAsync(p => p.ProjectID == model.ProjectID);
+
+            var services = pj.Meetings.SelectMany(s => s.Services).ToList();
+            var selectedService = services.FirstOrDefault(s => s.ServiceID == model.ServiceID);
+
+            var details = selectedService.ServiceDetails.ToList();
+
+            var client = new RestClient($"http://127.0.0.1:5000/");
+            var request = new RestRequest("userstories", Method.Post);
+            string filebath = " ";
+            request.AddJsonBody(new
+            {
+                services = details,
+                filepath = filebath
+            });
+
+            RestResponse response = await client.ExecuteAsync(request);
+            if (response.Content == null)
+                return NoContent();
+
+            var UserStoriesDescriptions = response.Content.ToList();
+
+            List<UserStory> US = new List<UserStory>();
+
+            foreach (var USD in UserStoriesDescriptions)
+            {
+                US.Append(new UserStory { UserStoryDescription = USD.ToString() });
+            }
+            _context.UserStories.AddRange(US);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
 
         // PUT: api/UserStories/5
