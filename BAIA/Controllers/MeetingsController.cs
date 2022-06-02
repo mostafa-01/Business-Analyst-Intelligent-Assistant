@@ -307,7 +307,14 @@ namespace BAIA.Controllers
 
                     foreach (var service in ServicesDic)
                     {
-                        string srvcTitle = service.serviceTitle;
+                        Service srvc = new Service
+                        {
+                            ServiceTitle = service.serviceTitle,
+                            Meeting = meeting
+                        };
+                        _context.Services.Add(srvc);
+                        await _context.SaveChangesAsync();
+                        srvc = _context.Services.Last();
                         foreach (var srvcDetail in service.serviceDetails)
                         {
                             int tsNum = Int32.Parse(srvcDetail.Timestamp);
@@ -317,12 +324,11 @@ namespace BAIA.Controllers
                                             t.Minutes,
                                             t.Seconds);
                             srvcDetail.Timestamp = ts;
+                            srvcDetail.Service = srvc;
+                            _context.ServiceDetails.Add(srvcDetail);
                         }
-                        //meeting.Services.Add(srvc);
-                        //_context.Services.Add(srvc);
-
+                        await _context.SaveChangesAsync();
                     }
-                    await _context.SaveChangesAsync();
                     return ServicesDic;
                 }
                 catch (Exception e)
