@@ -275,7 +275,7 @@ namespace BAIA.Controllers
         [Route("api/Meetings/GenerateServices")]
         [HttpGet("GenerateServices/{id}")]
         [EnableCors]
-        public async Task<ActionResult<Dictionary<string, List<Tuple<string, int>>>>> GenerateServices(int id)
+        public async Task<ActionResult<List<GenerateServiceModel>>> GenerateServices(int id)
         {
             var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == id);
             if (meeting == null)
@@ -290,7 +290,8 @@ namespace BAIA.Controllers
                     {
                         meetingscript = meeting.ASR_Text,
                         actors = meeting.MeetingPersonnel,
-                        meetingID = id
+                        meetingTitle = meeting.MeetingTitle,
+                        projectID = meeting.Project.ProjectID
                     });
                     request.AddHeader("content-type", "application/json");
                     RestResponse response = await client.ExecuteAsync(request);
@@ -299,37 +300,25 @@ namespace BAIA.Controllers
                         return BadRequest();
 
                     var content = response.Content;
-                    Dictionary<string, List<Tuple<string, int>>> ServicesDic =
-                        new Dictionary<string, List<Tuple<string, int>>>();
-                    ServicesDic = JsonSerializer
-                        .Deserialize<Dictionary<string, List<Tuple<string, int>>>>(content);
+                    /*Dictionary<string, List<GenerateServiceModel>> ServicesDic =
+                        new Dictionary<string, List<GenerateServiceModel>>();*/
+                    var ServicesDic = JsonSerializer
+                        .Deserialize<List<GenerateServiceModel>>(content);
 
-                    foreach (var keyval in ServicesDic)
+                    foreach (var service in ServicesDic)
                     {
-                        Service srvc = new Service
+                        string srvcTitle = service.serviceTitle;
+                        foreach (var srvcDetail in service.serviceDetails)
                         {
-                            ServiceTitle = keyval.Key,
-                            Meeting = meeting
-                        };
-                        foreach (var val in keyval.Value)
-                        {
-                            TimeSpan t = TimeSpan.FromSeconds(val.Item2);
+                            int tsNum = Int32.Parse(srvcDetail.Timestamp);
+                            TimeSpan t = TimeSpan.FromSeconds(tsNum);
                             string ts = string.Format("{0:D2}h:{1:D2}m:{2:D2}s",
                                             t.Hours,
                                             t.Minutes,
                                             t.Seconds);
-
-                            ServiceDetail srvcDet = new ServiceDetail
-                            {
-                                ServiceDetailString = val.Item1,
-                                Timestamp = ts,
-                                Service = srvc
-                            };
-
-                            //_context.ServiceDetails.Add(srvcDet);
-                            srvc.ServiceDetails.Add(srvcDet);
+                            srvcDetail.Timestamp = ts;
                         }
-                        meeting.Services.Add(srvc);
+                        //meeting.Services.Add(srvc);
                         //_context.Services.Add(srvc);
 
                     }
