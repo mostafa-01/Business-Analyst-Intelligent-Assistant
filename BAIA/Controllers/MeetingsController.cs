@@ -305,6 +305,8 @@ namespace BAIA.Controllers
                     var ServicesDic = JsonSerializer
                         .Deserialize<List<GenerateServiceModel>>(content);
 
+                    List<Service> myServices = new List<Service>();
+                    List<ServiceDetail> myDetails = new List<ServiceDetail>();
                     foreach (var service in ServicesDic)
                     {
                         Service srvc = new Service
@@ -312,9 +314,8 @@ namespace BAIA.Controllers
                             ServiceTitle = service.serviceTitle,
                             Meeting = meeting
                         };
-                        _context.Services.Add(srvc);
-                        await _context.SaveChangesAsync();
-                        srvc = _context.Services.FirstOrDefault(s => s.ServiceID == _context.Services.Select(g => g.ServiceID).Max());
+                        myServices.Add(srvc);
+                        srvc = myServices.FirstOrDefault(s => s.ServiceTitle.Equals(srvc.ServiceTitle));
                         foreach (var srvcDetail in service.serviceDetails)
                         {
                             int tsNum = Int32.Parse(srvcDetail.Timestamp);
@@ -325,9 +326,11 @@ namespace BAIA.Controllers
                                             t.Seconds);
                             srvcDetail.Timestamp = ts;
                             srvcDetail.Service = srvc;
-                            _context.ServiceDetails.Add(srvcDetail);
+                            myDetails.Add(srvcDetail);                        
                         }
+                        _context.AddRange(myDetails);
                         await _context.SaveChangesAsync();
+
                     }
                     return ServicesDic;
                 }
