@@ -133,12 +133,18 @@ namespace BAIA.Controllers
                 .Include(s => s.Services)
                 .ThenInclude(w => w.ServiceDetails)
                 .FirstOrDefaultAsync(x => x.MeetingID == id);
-
             if (meeting == null)
             {
-                return NotFound();
+                return BadRequest();
             }
-
+            else
+            {
+                if (meeting.Services == null)
+                {
+                    await GenerateServices(id);
+                }
+            }
+            
             return meeting;
         }
 
@@ -272,10 +278,10 @@ namespace BAIA.Controllers
         }
 
         //Get: api/Projects/GenerateServices/5
-        [Route("api/Meetings/GenerateServices")]
-        [HttpGet("GenerateServices/{id}")]
-        [EnableCors]
-        public async Task<ActionResult<List<GenerateServiceModel>>> GenerateServices(int id)
+        //[Route("api/Meetings/GenerateServices")]
+        //[HttpGet("GenerateServices/{id}")]
+        //[EnableCors]
+        private async Task<IActionResult> GenerateServices(int id)
         {
             var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == id);
             if (meeting == null)
@@ -304,7 +310,7 @@ namespace BAIA.Controllers
                         .Deserialize<List<GenerateServiceModel>>(content);
 
 
-                    foreach(var item in ServicesDic)
+                    foreach (var item in ServicesDic)
                     {
                         Service srvc = new Service
                         {
@@ -328,6 +334,7 @@ namespace BAIA.Controllers
                         await _context.SaveChangesAsync();
                     }
 
+                    return Ok();
 
                     /*List<Service> myServices = new List<Service>();
                     List<ServiceDetail> myDetails = new List<ServiceDetail>();
@@ -356,7 +363,6 @@ namespace BAIA.Controllers
                         await _context.SaveChangesAsync();
                     }*/
 
-                    return Ok();
                 }
                 catch (Exception e)
                 {
@@ -364,6 +370,8 @@ namespace BAIA.Controllers
                 }
             }
         }
+
+        
 
         /*private async Task<ActionResult<string>> GetASR_Text(string AudioReference, string ProjectTitle, string Domain,
             string MeetingPersonnel, string MeetingTitle)

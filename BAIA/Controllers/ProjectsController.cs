@@ -117,7 +117,7 @@ namespace BAIA.Controllers
                     return StatusCode(500);
                 }
             }
-        } 
+        }
 
 
         // GET: api/Projects/GetProject/5
@@ -210,7 +210,7 @@ namespace BAIA.Controllers
         public async Task<ActionResult<Project>> PostProject([FromBody] AddProjectModel model)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.UserID == model.UserID);
-            if(user == null)
+            if (user == null)
             {
                 return NotFound();
             }
@@ -265,12 +265,14 @@ namespace BAIA.Controllers
         [Route("api/Projects/DetectConflicts")]
         [HttpGet("DetectConflicts/{id}")]
         [EnableCors]
-        public async Task<ActionResult<Project>> DetectConflicts(int id)
+        public async Task<ActionResult<Meeting>> DetectConflicts([FromBody] DetectConflictsModel model)
         {
+            int meetingID = model.MeetingID;
+            var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == meetingID);
             var project = await _context.Projects
                 .Include(p => p.Meetings)
                 .ThenInclude(m => m.Services)
-                .ThenInclude(s => s.ServiceDetails).FirstOrDefaultAsync(p => p.ProjectID == id);
+                .ThenInclude(s => s.ServiceDetails).FirstOrDefaultAsync(p => p.ProjectID == model.ProjectID);
             if (project == null)
             {
                 return BadRequest();
@@ -287,5 +289,7 @@ namespace BAIA.Controllers
             }
 
         }
+
+
     }
 }
