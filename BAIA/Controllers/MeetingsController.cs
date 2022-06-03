@@ -193,7 +193,7 @@ namespace BAIA.Controllers
         [EnableCors]
         public async Task<ActionResult<Meeting>> PostMeeting([FromBody] AddMeetingModel model)
         {
-            var project = _context.Projects.Include(p => p.Meetings).FirstOrDefault(x => x.ProjectID == model.ProjectID);
+            var project = await _context.Projects.Include(p => p.Meetings).FirstOrDefaultAsync(x => x.ProjectID == model.ProjectID);
             if (project == null)
             {
                 return NotFound();
@@ -214,7 +214,7 @@ namespace BAIA.Controllers
             }
             try
             {
-                model.Meeting.Project = _context.Projects.FirstOrDefault(x => x.ProjectID == model.ProjectID);
+                model.Meeting.Project = await _context.Projects.FirstOrDefaultAsync(x => x.ProjectID == model.ProjectID);
 
                 var client = new RestClient($"http://127.0.0.1:5000/");
                 var request = new RestRequest("meetingscript", Method.Post);
@@ -254,7 +254,7 @@ namespace BAIA.Controllers
         [EnableCors]
         public async Task<ActionResult<Meeting>> DeleteMeeting(int id)
         {
-            var meeting = await _context.Meetings.FindAsync(id);
+            var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == id);
             if (meeting == null)
             {
                 return NotFound();
@@ -279,7 +279,7 @@ namespace BAIA.Controllers
         {
             var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == id);
             if (meeting == null)
-                return NoContent();
+                return BadRequest();
             else
             {
                 try
@@ -297,15 +297,39 @@ namespace BAIA.Controllers
                     RestResponse response = await client.ExecuteAsync(request);
 
                     if (response.Content == null)
-                        return BadRequest();
+                        return NoContent();
 
                     var content = response.Content;
-                    /*Dictionary<string, List<GenerateServiceModel>> ServicesDic =
-                        new Dictionary<string, List<GenerateServiceModel>>();*/
                     var ServicesDic = JsonSerializer
                         .Deserialize<List<GenerateServiceModel>>(content);
 
-                    List<Service> myServices = new List<Service>();
+
+                    foreach(var item in ServicesDic)
+                    {
+                        Service srvc = new Service
+                        {
+                            ServiceTitle = item.serviceTitle,
+                            Meeting = meeting
+                        };
+                        _context.Services.Add(srvc);
+                        await _context.SaveChangesAsync();
+                        foreach (var srvcDetail in item.serviceDetails)
+                        {
+                            int tsNum = Int32.Parse(srvcDetail.Timestamp);
+                            TimeSpan t = TimeSpan.FromSeconds(tsNum);
+                            string ts = string.Format("{0:D2}:{1:D2}:{2:D2}",
+                                            t.Hours,
+                                            t.Minutes,
+                                            t.Seconds);
+                            srvcDetail.Timestamp = ts;
+                            srvcDetail.Service = srvc;
+                            _context.ServiceDetails.Add(srvcDetail);
+                        }
+                        await _context.SaveChangesAsync();
+                    }
+
+
+                    /*List<Service> myServices = new List<Service>();
                     List<ServiceDetail> myDetails = new List<ServiceDetail>();
                     foreach (var service in ServicesDic)
                     {
@@ -320,7 +344,7 @@ namespace BAIA.Controllers
                         {
                             int tsNum = Int32.Parse(srvcDetail.Timestamp);
                             TimeSpan t = TimeSpan.FromSeconds(tsNum);
-                            string ts = string.Format("{0:D2}h:{1:D2}m:{2:D2}s",
+                            string ts = string.Format("{0:D2}:{1:D2}:{2:D2}",
                                             t.Hours,
                                             t.Minutes,
                                             t.Seconds);
@@ -328,16 +352,15 @@ namespace BAIA.Controllers
                             srvcDetail.Service = srvc;
                             myDetails.Add(srvcDetail);                        
                         }
-                        _context.AddRange(myDetails);
+                        _context.ServiceDetails.AddRange(myDetails);
                         await _context.SaveChangesAsync();
+                    }*/
 
-                    }
-                    return ServicesDic;
+                    return Ok();
                 }
                 catch (Exception e)
                 {
                     return Content(e.ToString() + StatusCode(500));
-                    //return StatusCode(500);
                 }
             }
         }

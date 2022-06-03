@@ -209,19 +209,19 @@ namespace BAIA.Controllers
         [EnableCors]
         public async Task<ActionResult<Project>> PostProject([FromBody] AddProjectModel model)
         {
-            var user = _context.Users.Include(u => u.Projects).FirstOrDefault(x => x.UserID == model.UserID);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserID == model.UserID);
             if(user == null)
             {
                 return NotFound();
             }
-            var project = _context.Projects.FirstOrDefault(p => p.ProjectTitle == model.Project.ProjectTitle);
+            var project = await _context.Projects.FirstOrDefaultAsync(p => p.ProjectTitle == model.Project.ProjectTitle);
             if (project != null)
             {
                 return BadRequest();
             }
             try
             {
-                model.Project.User = _context.Users.FirstOrDefault(x => x.UserID == model.UserID);
+                model.Project.User = user;
                 _context.Projects.Add(model.Project);
                 await _context.SaveChangesAsync();
 
