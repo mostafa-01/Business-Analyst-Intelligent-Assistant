@@ -10,5 +10,8 @@ namespace BAIA.Models
         public int ProjectID { set; get; }
         public int ServiceID { set; get; }
 
+        public int Filepath { set; get; }
+
+
     }
 }

@@ -60,7 +60,7 @@ namespace BAIA.Controllers
         /// and request the flask endpoint for userstories generation with the list of details
         /// the response is the list of user stories description
         /// </summary>
-        /// <param name="GenerateUSModel {projectid , serviceid}"></param>
+        /// <param name="GenerateUSModel {projectid , serviceid , filepath}"></param>
         /// <returns>statuscode(500(InternalServError) , 200(Ok) , 204(NoContent))<UserStories></UserStories></returns>
         [Route("api/UserStories/GenerateManually")]
         [HttpGet("GenerateManually")]
@@ -83,16 +83,15 @@ namespace BAIA.Controllers
                     var services = pj.Meetings.SelectMany(s => s.Services).ToList();
                     var selectedService = services.FirstOrDefault(s => s.ServiceID == model.ServiceID);
 
-                    var details = selectedService.ServiceDetails.Select(d => d.ServiceDetailString).ToList();
+                    var details = selectedService.ServiceDetails.Select(d => d.ServiceDetailString).ToList(); // test on more than one detail
 
                     var client = new RestClient($"http://127.0.0.1:5000/");
                     var request = new RestRequest("userstories", Method.Post);
 
-                    string filebath = " ";
                     request.AddJsonBody(new
                     {
                         services = details,
-                        filepath = filebath
+                        filepath = model.Filepath
                     });
 
                     RestResponse response = await client.ExecuteAsync(request);
