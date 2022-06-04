@@ -11,7 +11,6 @@ namespace BAIA.Models
     {
         public int UserStoryID { get; set; }
 
-        [Required]
         public string UserStoryTitle { get; set; }
 
         [Required]
