@@ -62,8 +62,8 @@ namespace BAIA.Controllers
         /// </summary>
         /// <param name="GenerateUSModel {projectid , serviceid , filepath}"></param>
         /// <returns>statuscode(500(InternalServError) , 200(Ok) , 204(NoContent))<UserStories></UserStories></returns>
-        [Route("api/UserStories/GenerateManually")]
-        [HttpGet("GenerateManually")]
+        [Route("api/UserStories/GenerateUS")]
+        [HttpGet("GenerateUS")]
         [EnableCors]
         public async Task<ActionResult> GenerateUS([FromBody] GenerateUSModel model)
         {
