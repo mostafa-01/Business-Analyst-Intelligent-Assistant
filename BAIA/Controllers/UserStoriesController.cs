@@ -83,7 +83,7 @@ namespace BAIA.Controllers
                     var services = pj.Meetings.SelectMany(s => s.Services).ToList();
                     var selectedService = services.FirstOrDefault(s => s.ServiceID == model.ServiceID);
 
-                    var details = selectedService.ServiceDetails.ToList();
+                    var details = selectedService.ServiceDetails.Select(d => d.ServiceDetailString).ToList();
 
                     var client = new RestClient($"http://127.0.0.1:5000/");
                     var request = new RestRequest("userstories", Method.Post);
