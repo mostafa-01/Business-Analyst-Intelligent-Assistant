@@ -280,7 +280,7 @@ namespace BAIA.Controllers
             try
             {
 
-                return project;
+                return null;
             }
             catch (Exception e)
             {

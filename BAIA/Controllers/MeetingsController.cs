@@ -139,7 +139,7 @@ namespace BAIA.Controllers
             }
             else
             {
-                if (meeting.Services == null)
+                if (meeting.Services.Count == 0)
                 {
                     await GenerateServices(id);
                 }
