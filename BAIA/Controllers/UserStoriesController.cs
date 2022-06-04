@@ -53,7 +53,15 @@ namespace BAIA.Controllers
         /// <returns>Ilist<UserStories></UserStories></returns>
 
 
-
+        /// <summary>
+        /// GenerateManully is the usrstories endpoint to generate and save the new user stories in the database
+        /// sequence: Client app requests a to generate USs manually from a specidic service so,
+        /// the api tends to get all the servicce details from the database related to this service
+        /// and request the flask endpoint for userstories generation with the list of details
+        /// the response is the list of user stories description
+        /// </summary>
+        /// <param name="GenerateUSModel {projectid , serviceid}"></param>
+        /// <returns>statuscode(500(InternalServError) , 200(Ok) , 204(NoContent))<UserStories></UserStories></returns>
         [Route("api/UserStories/GenerateManually")]
         [HttpGet("GenerateManually")]
         [EnableCors]
@@ -64,36 +72,50 @@ namespace BAIA.Controllers
                 .ThenInclude(s => s.Services)
                 .ThenInclude(d => d.ServiceDetails)
                 .FirstOrDefaultAsync(p => p.ProjectID == model.ProjectID);
-
-            var services = pj.Meetings.SelectMany(s => s.Services).ToList();
-            var selectedService = services.FirstOrDefault(s => s.ServiceID == model.ServiceID);
-
-            var details = selectedService.ServiceDetails.ToList();
-
-            var client = new RestClient($"http://127.0.0.1:5000/");
-            var request = new RestRequest("userstories", Method.Post);
-            string filebath = " ";
-            request.AddJsonBody(new
+            if (pj == null)
             {
-                services = details,
-                filepath = filebath
-            });
-
-            RestResponse response = await client.ExecuteAsync(request);
-            if (response.Content == null)
                 return NoContent();
-
-            var UserStoriesDescriptions = response.Content.ToList();
-
-            List<UserStory> US = new List<UserStory>();
-
-            foreach (var USD in UserStoriesDescriptions)
-            {
-                US.Append(new UserStory { UserStoryDescription = USD.ToString() });
             }
-            _context.UserStories.AddRange(US);
-            await _context.SaveChangesAsync();
-            return Ok();
+            else
+            {
+                try
+                {
+                    var services = pj.Meetings.SelectMany(s => s.Services).ToList();
+                    var selectedService = services.FirstOrDefault(s => s.ServiceID == model.ServiceID);
+
+                    var details = selectedService.ServiceDetails.ToList();
+
+                    var client = new RestClient($"http://127.0.0.1:5000/");
+                    var request = new RestRequest("userstories", Method.Post);
+
+                    string filebath = " ";
+                    request.AddJsonBody(new
+                    {
+                        services = details,
+                        filepath = filebath
+                    });
+
+                    RestResponse response = await client.ExecuteAsync(request);
+                    if (response.Content == null)
+                        return NoContent();
+
+                    var UserStoriesDescriptions = response.Content.ToList();
+
+                    List<UserStory> US = new List<UserStory>();
+
+                    foreach (var USD in UserStoriesDescriptions)
+                    {
+                        US.Append(new UserStory { UserStoryDescription = USD.ToString() });
+                    }
+                    _context.UserStories.AddRange(US);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(500, e.Message);
+                }
+            }
         }
 
         // PUT: api/UserStories/5
