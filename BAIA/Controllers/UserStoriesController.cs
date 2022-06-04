@@ -65,7 +65,7 @@ namespace BAIA.Controllers
         [Route("api/UserStories/GenerateManually")]
         [HttpGet("GenerateManually")]
         [EnableCors]
-        public async Task<ActionResult> GenerateManually([FromBody] GenerateUSModel model)
+        public async Task<ActionResult> GenerateUS([FromBody] GenerateUSModel model)
         {
             Project pj =await _context.Projects
                 .Include(m => m.Meetings)

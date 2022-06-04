@@ -113,8 +113,8 @@ namespace BAIA.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.Out.WriteLine(ex.ToString());
-                    return StatusCode(500);
+                    
+                    return StatusCode(500 , ex.Message);
                 }
             }
         }
