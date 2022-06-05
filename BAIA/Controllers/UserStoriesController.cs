@@ -106,10 +106,14 @@ namespace BAIA.Controllers
 
                     List<UserStory> US = new List<UserStory>();
 
-                    /*foreach (var USD in UserStoriesDescriptions)
+                    for(int i = 0; i < UserStoriesDescriptions.stories.Count; i++)
                     {
-                        US.Append(new UserStory { UserStoryDescription = USD.ToString() });
-                    }*/
+                        US.Add(new UserStory {
+                            UserStoryDescription = UserStoriesDescriptions.stories[i],
+                            Preconditions = UserStoriesDescriptions.preconditions[i],
+                            AcceptanceCriteria = UserStoriesDescriptions.acceptanceCriteria[i]
+                        });
+                    }
                     _context.UserStories.AddRange(US);
                     await _context.SaveChangesAsync();
                     return Ok();
