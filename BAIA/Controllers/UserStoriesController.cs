@@ -10,6 +10,7 @@ using BAIA.Models;
 using Microsoft.AspNetCore.Cors;
 using RestSharp;
 using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace BAIA.Controllers
 {
@@ -100,15 +101,15 @@ namespace BAIA.Controllers
                         return NoContent();
 
 
-                    var UserStoriesDescriptions = JsonSerializer
-                    .Deserialize<List<UserStoryResponseModel>>(response.Content);
+                    var UserStoriesDescriptions = JsonConvert
+                    .DeserializeObject<UserStoryResponseModel>(response.Content);
 
                     List<UserStory> US = new List<UserStory>();
 
-                    foreach (var USD in UserStoriesDescriptions)
+                    /*foreach (var USD in UserStoriesDescriptions)
                     {
                         US.Append(new UserStory { UserStoryDescription = USD.ToString() });
-                    }
+                    }*/
                     _context.UserStories.AddRange(US);
                     await _context.SaveChangesAsync();
                     return Ok();

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace BAIA.Models
 {
+    [Serializable]
     public class UserStoryResponseModel
     {
         public List<string> stories { get; set; }

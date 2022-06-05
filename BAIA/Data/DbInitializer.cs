@@ -10,7 +10,7 @@ namespace BAIA.Data
     {
         public static void Initialize(BAIA_DB_Context context)
         {
-            context.Database.EnsureDeleted();
+            //context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
             if (context.Users.Any())
             {
