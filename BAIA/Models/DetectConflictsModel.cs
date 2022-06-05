@@ -7,7 +7,10 @@ namespace BAIA.Models
 {
     public class DetectConflictsModel
     {
-        public int MeetingID { get; set; }
         public int ProjectID { get; set; }
+        public int MeetingID { get; set; }
+
+
+
     }
 }

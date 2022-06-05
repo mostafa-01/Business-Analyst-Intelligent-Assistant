@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using BAIA.Data;
 using BAIA.Models;
 using Microsoft.AspNetCore.Cors;
+using RestSharp;
+using System.Text.Json;
 
 namespace BAIA.Controllers
 {
@@ -263,24 +265,74 @@ namespace BAIA.Controllers
         }
 
         [Route("api/Projects/DetectConflicts")]
-        [HttpGet("DetectConflicts/{id}")]
+        [HttpPost("DetectConflicts")]
         [EnableCors]
-        public async Task<ActionResult<Meeting>> DetectConflicts([FromBody] DetectConflictsModel model)
+        public async Task<ActionResult<Project>> DetectConflicts([FromBody]DetectConflictsModel model)
         {
-            int meetingID = model.MeetingID;
-            var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == meetingID);
-            var project = await _context.Projects
+            //var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == model.MeetingID);
+            Project project = await _context.Projects
                 .Include(p => p.Meetings)
                 .ThenInclude(m => m.Services)
                 .ThenInclude(s => s.ServiceDetails).FirstOrDefaultAsync(p => p.ProjectID == model.ProjectID);
             if (project == null)
             {
-                return BadRequest();
+                return NotFound();
             }
             try
             {
+                
+                var details = project.Meetings.Select(s => s.Services.
+                    Select(se => se.ServiceDetails.Select(d => d.ServiceDetailString)));
+                var services =project.Meetings.Select(s => s.Services.
+                    Select(se => se.ServiceTitle));
+                var meetingIDs = project.Meetings.Select(m => m.MeetingID);
+                var serviceIDs = project.Meetings.Select(s => s.Services.
+                    Select(i => i.ServiceID));
 
-                return null;
+
+                var client = new RestClient($"http://127.0.0.1:5000/");
+                var request = new RestRequest("detectConflicts", Method.Get);
+                request.AddJsonBody(new
+                {
+                    meetingID = model.MeetingID,
+                    details,
+                    services,
+                    meetingIDs,
+                    serviceIDs
+
+                });
+                request.AddHeader("content-type", "application/json");
+                RestResponse response = await client.ExecuteAsync(request);
+
+                if (response.IsSuccessful == false)
+                    return BadRequest();
+
+
+
+                var content = response.Content;
+                var modifiedServices = JsonSerializer
+                    .Deserialize<List<List<int>>>(content);
+
+                if (modifiedServices.Count == 0)
+                {
+                    return NoContent();
+                }
+
+                foreach (var item in modifiedServices)
+                {
+                    int modServiceID = item[0];
+                    int meetingWithConflict = item[1];
+                    int serviceWithConflict = item[2];
+                    Service s1 = await _context.Services.FirstOrDefaultAsync(x => x.ServiceID == modServiceID);
+                    s1.ConflictServiceID = serviceWithConflict;
+                    s1.ConflictMeetingID = meetingWithConflict;
+
+                    Service s2 = await _context.Services.FirstOrDefaultAsync(x => x.ServiceID == serviceWithConflict);
+                    s2.ConflictServiceID = modServiceID;
+                    s2.ConflictMeetingID = model.MeetingID;
+                }
+                await _context.SaveChangesAsync();
+                 return Ok();
             }
             catch (Exception e)
             {

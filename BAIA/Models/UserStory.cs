@@ -22,11 +22,6 @@ namespace BAIA.Models
 
         public string BusinessLogicFlow { get; set; }
 
-        [DefaultValue(false)]
-        public bool Conflict { get; set; }
-
-        [DefaultValue(false)]
-        public bool UsetStoryVerified { get; set; }
 
         public virtual Meeting Meeting { get; set; }
     }

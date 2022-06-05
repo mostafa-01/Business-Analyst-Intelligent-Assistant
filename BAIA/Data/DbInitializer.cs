@@ -10,7 +10,7 @@ namespace BAIA.Data
     {
         public static void Initialize(BAIA_DB_Context context)
         {
-            //context.Database.EnsureDeleted();
+            context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
             if (context.Users.Any())
             {
@@ -70,7 +70,12 @@ namespace BAIA.Data
             context.SaveChanges();
             var services = new Service[]
             {
-                new Service{ServiceTitle="Login Page",Meeting=meetings[0]}
+                new Service{ServiceTitle="Login Page",Meeting=meetings[0]},
+                new Service{ServiceTitle="Home Page",Meeting=meetings[0]},
+                new Service{ServiceTitle="Logout Button",Meeting=meetings[1]},
+                new Service{ServiceTitle="Home Page",Meeting=meetings[1]},
+                new Service{ServiceTitle="Profile Page",Meeting=meetings[2]},
+                new Service{ServiceTitle="Login Page",Meeting=meetings[2]}
             };
             foreach (Service s in services)
             {
@@ -79,16 +84,35 @@ namespace BAIA.Data
             context.SaveChanges();
             var serviceDetails = new ServiceDetail[]
             {
-                new ServiceDetail{ServiceDetailString="login page should be the.....",Timestamp="1:30",Service=services[0]},
-                new ServiceDetail{ServiceDetailString="It should provide two text.....",Timestamp="5:21",Service=services[0]},
-                new ServiceDetail{ServiceDetailString="It should have a command.....",Timestamp="10:32",Service=services[0]}
+                new ServiceDetail{ServiceDetailString="login page should be the first page the user sees when he first opens the application",Timestamp="1:30",Service=services[0]},
+                new ServiceDetail{ServiceDetailString="It should provide two textboxes one for the username and one for the password",Timestamp="5:21",Service=services[0]},
+                new ServiceDetail{ServiceDetailString="It should have a register button",Timestamp="10:32",Service=services[0]},
+
+                new ServiceDetail{ServiceDetailString="Home page should be the first page the user sees when he login",Timestamp="1:30",Service=services[1]},
+                new ServiceDetail{ServiceDetailString="It should provide last accessed item",Timestamp="5:21",Service=services[1]},
+                new ServiceDetail{ServiceDetailString="It should have my profile button",Timestamp="10:32",Service=services[1]},
+                
+                new ServiceDetail{ServiceDetailString="logout button must navigate the user to the login page",Timestamp="3:35",Service=services[2]},
+                new ServiceDetail{ServiceDetailString="Any data must be saved before the user logs out",Timestamp="6:69",Service=services[2]},
+
+                new ServiceDetail{ServiceDetailString="Home page must contain logout button",Timestamp="1:30",Service=services[3]},
+                new ServiceDetail{ServiceDetailString="It must be interactive",Timestamp="5:21",Service=services[3]},
+                //new ServiceDetail{ServiceDetailString="It isn't necessary to provide last accessed item",Timestamp="5:21",Service=services[3]},
+
+                new ServiceDetail{ServiceDetailString="Profile page should should show all data related to the user",Timestamp="1:30",Service=services[4]},
+                new ServiceDetail{ServiceDetailString="It should allow the user to edit his\\her data",Timestamp="5:21",Service=services[4]},
+
+
+                new ServiceDetail{ServiceDetailString="login page must be secured against any hack",Timestamp="1:40",Service=services[5]},
+                new ServiceDetail{ServiceDetailString="The user can't login with his username",Timestamp="6:20",Service=services[5]},
+                new ServiceDetail{ServiceDetailString="It should prevent user from loging in if any of the textboxes is invalid",Timestamp="8:30",Service=services[5]}
             };
             foreach (ServiceDetail sd in serviceDetails)
             {
                 context.ServiceDetails.Add(sd);
             }
             context.SaveChanges();
-            var userStories = new UserStory[]
+            /*var userStories = new UserStory[]
             {
                 new UserStory{UserStoryTitle="First User Story",UserStoryDescription="As a supply planner, I need the ability to plan dependent forecasted items as independent SKUs, so that I can include those items in my MSP / distribution requirements plan.I will know it’s achieved when I can pull in demand forecast of a parent SKU, identify the bill of materials, andcreate a sourcing plan for dependent SKUs.....",
                     Meeting=meetings[0] }
@@ -97,7 +121,7 @@ namespace BAIA.Data
             {
                 context.UserStories.Add(us);
             }
-            context.SaveChanges();
+            context.SaveChanges();*/
 
 
 

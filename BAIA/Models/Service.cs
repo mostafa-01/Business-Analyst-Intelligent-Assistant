@@ -19,8 +19,9 @@ namespace BAIA.Models
         [DefaultValue(false)]
         public bool ServiceVerified { get; set; }
 
-        
         public int ConflictServiceID { get; set; }
+
+        public int ConflictMeetingID { get; set; }
 
 
         public virtual Meeting Meeting { get; set; }
