@@ -78,7 +78,7 @@ namespace BAIA.Controllers
         [Route("api/Projects/GenerateAsIs")]
         [HttpGet("GenerateAsIs/{id}")]
         [EnableCors]
-        public async Task<ActionResult<Dictionary<string, List<string>>>> GenerateAsIs(int id)
+        public async Task<ActionResult<List<AsIs>>> GenerateAsIs(int id)
         {
             var project = await _context.Projects
                 .Include(m => m.Meetings)
@@ -93,7 +93,8 @@ namespace BAIA.Controllers
                 {
 
                     // Tuple<string, List<string>> listnode = new Tuple<string,List<string>>; 
-                    Dictionary<string, List<string>> AsIs = new Dictionary<string, List<string>>();
+                    //Dictionary<string, List<string>> AsIs = new Dictionary<string, List<string>>();
+                    List<AsIs> AsIs= new List<AsIs>();
                     foreach (Meeting M in project.Meetings)
                     {
                         foreach (Service S in M.Services)
@@ -107,10 +108,15 @@ namespace BAIA.Controllers
                                 }
 
 
-                                AsIs.Add(S.ServiceTitle, details);
+                                AsIs.Add(new AsIs
+                                {
+                                   serviceTitle =  S.ServiceTitle,
+                                    serviceDetails = details
+                                });
                             }
                         }
                     }
+
                     return AsIs;
                 }
                 catch (Exception ex)
