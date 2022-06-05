@@ -9,6 +9,7 @@ using BAIA.Data;
 using BAIA.Models;
 using Microsoft.AspNetCore.Cors;
 using RestSharp;
+using System.Text.Json;
 
 namespace BAIA.Controllers
 {
@@ -98,7 +99,9 @@ namespace BAIA.Controllers
                     if (response.Content == null)
                         return NoContent();
 
-                    var UserStoriesDescriptions = response.Content.ToList();
+
+                    var UserStoriesDescriptions = JsonSerializer
+                    .Deserialize<List<UserStoryResponseModel>>(response.Content);
 
                     List<UserStory> US = new List<UserStory>();
 
