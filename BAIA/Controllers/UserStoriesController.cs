@@ -137,7 +137,7 @@ namespace BAIA.Controllers
                     }
 
                     string AccCrieteria = null;
-                    i = 0;
+                    i = 1;
                     foreach (var ac in UserStoriesDescriptions.acceptanceCriteria)
                     {
                         if (UserStoriesDescriptions.preconditions.Count == i)
