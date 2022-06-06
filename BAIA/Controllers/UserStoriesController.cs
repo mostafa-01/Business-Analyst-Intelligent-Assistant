@@ -124,7 +124,15 @@ namespace BAIA.Controllers
 
                     List<UserStory> US = new List<UserStory>();
 
-
+                    foreach (var us in UserStoriesDescriptions.stories)
+                    {
+                        US.Add(new UserStory{
+                            UserStoryTitle = selectedService.ServiceTitle,
+                            UserStoryDescription = us,
+                            Preconditions = UserStoriesDescriptions.preconditions.ToString(),
+                            AcceptanceCriteria = UserStoriesDescriptions.acceptanceCriteria.ToString()
+                        });
+                    }
 
                     _context.UserStories.AddRange(US);
                     await _context.SaveChangesAsync();
@@ -152,11 +160,11 @@ namespace BAIA.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 if (!UserStoryExists(id))
                 {
-                    return NotFound();
+                    return NotFound(ex.Message);
                 }
                 else
                 {
@@ -166,6 +174,7 @@ namespace BAIA.Controllers
 
             return NoContent();
         }
+
 
         // POST: api/UserStories
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
