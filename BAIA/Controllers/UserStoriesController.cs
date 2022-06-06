@@ -86,7 +86,7 @@ namespace BAIA.Controllers
         /// <param name="GenerateUSModel {projectid , serviceid , filepath}"></param>
         /// <returns>statuscode(500(InternalServError) , 200(Ok) , 204(NoContent))<UserStories></UserStories></returns>
         [Route("api/UserStories/GenerateUS")]
-        [HttpGet("GenerateUS")]
+        [HttpPost("GenerateUS")]
         [EnableCors]
         public async Task<ActionResult> GenerateUS([FromBody] GenerateUSModel model)
         {
@@ -124,7 +124,7 @@ namespace BAIA.Controllers
 
                     List<UserStory> US = new List<UserStory>();
 
-                    string preconditions = " ";
+                    string preconditions = "";
                     int i = 1;
                     foreach (var pr in UserStoriesDescriptions.preconditions)
                     {
@@ -139,7 +139,7 @@ namespace BAIA.Controllers
                         i++;
                     }
 
-                    string AccCrieteria = " ";
+                    string AccCrieteria = "";
                     i = 1;
                     foreach (var ac in UserStoriesDescriptions.acceptanceCriteria)
                     {
