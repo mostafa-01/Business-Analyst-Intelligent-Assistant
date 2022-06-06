@@ -129,10 +129,13 @@ namespace BAIA.Controllers
                     foreach (var pr in UserStoriesDescriptions.preconditions)
                     {
                         if(UserStoriesDescriptions.preconditions.Count == i)
-                            preconditions.Concat(pr);
+                            preconditions +=pr;
                         else
-                            preconditions.Concat(pr + '#');
+                        {
+                            preconditions += pr;
+                            preconditions += "#";
 
+                        }
                         i++;
                     }
 
@@ -141,10 +144,13 @@ namespace BAIA.Controllers
                     foreach (var ac in UserStoriesDescriptions.acceptanceCriteria)
                     {
                         if (UserStoriesDescriptions.preconditions.Count == i)
-                            AccCrieteria.Concat(ac);
+                            AccCrieteria+= ac;
                         else
-                            AccCrieteria.Concat(ac + '#');
+                        {
+                            AccCrieteria += ac;
+                            AccCrieteria += "#";
 
+                        }
                         i++;
                     }
 
