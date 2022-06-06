@@ -49,11 +49,32 @@ namespace BAIA.Controllers
         }
 
         /// <summary>
-        /// implement here get user stories
+        /// this api is made to find and return all the User Stories related to a specific project 
         /// </summary>
         /// <param name="projectid"></param>
         /// <returns>Ilist<UserStories></UserStories></returns>
+        [Route("api/UserStories/getProjectUserStories")]
+        [HttpGet("getProjectUserStories/{id}")]
+        [EnableCors]
+        public async Task<ActionResult<List<UserStory>>> getProjectUserStories(int id)
+        {
+            Project project = await _context.Projects
+                .Include(m => m.Meetings)
+                .ThenInclude(us => us.UserStories)
+                .FirstOrDefaultAsync(p => p.ProjectID == id);
+            
+            if (project == null)
+                return StatusCode(204 , "Project not found");
 
+            try{
+
+                return Ok(project.Meetings.SelectMany(us => us.UserStories).ToList());
+
+            }catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
         /// <summary>
         /// GenerateManully is the usrstories endpoint to generate and save the new user stories in the database
@@ -89,36 +110,26 @@ namespace BAIA.Controllers
 
                     var client = new RestClient($"http://127.0.0.1:5000/");
                     var request = new RestRequest("userstories", Method.Post);
-
                     request.AddJsonBody(new
                     {
                         services = details,
                         filepath = model.Filepath
                     });
-
                     RestResponse response = await client.ExecuteAsync(request);
                     if (response.Content == null)
                         return NoContent();
-
-
+                    
                     var UserStoriesDescriptions = JsonConvert
                     .DeserializeObject<UserStoryResponseModel>(response.Content);
 
                     List<UserStory> US = new List<UserStory>();
 
-                    for(int i = 0; i < UserStoriesDescriptions.stories.Count; i++)
-                    {
-                        US.Add(new UserStory {
-                            UserStoryDescription = UserStoriesDescriptions.stories[i],
-                            Preconditions = UserStoriesDescriptions.preconditions[i],
-                            AcceptanceCriteria = UserStoriesDescriptions.acceptanceCriteria[i]
-                        });
-                    }
+
+
                     _context.UserStories.AddRange(US);
                     await _context.SaveChangesAsync();
                     return Ok();
-                }
-                catch (Exception e)
+                }catch (Exception e)
                 {
                     return StatusCode(500, e.Message);
                 }
