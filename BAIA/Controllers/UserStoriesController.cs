@@ -124,13 +124,37 @@ namespace BAIA.Controllers
 
                     List<UserStory> US = new List<UserStory>();
 
+                    string preconditions = null;
+                    int i = 1;
+                    foreach (var pr in UserStoriesDescriptions.preconditions)
+                    {
+                        if(UserStoriesDescriptions.preconditions.Count == i)
+                            preconditions.Concat(pr);
+                        else
+                            preconditions.Concat(pr + '#');
+
+                        i++;
+                    }
+
+                    string AccCrieteria = null;
+                    i = 0;
+                    foreach (var ac in UserStoriesDescriptions.acceptanceCriteria)
+                    {
+                        if (UserStoriesDescriptions.preconditions.Count == i)
+                            AccCrieteria.Concat(ac);
+                        else
+                            AccCrieteria.Concat(ac + '#');
+
+                        i++;
+                    }
+
                     foreach (var us in UserStoriesDescriptions.stories)
                     {
                         US.Add(new UserStory{
                             UserStoryTitle = selectedService.ServiceTitle,
                             UserStoryDescription = us,
-                            Preconditions = UserStoriesDescriptions.preconditions.ToString(),
-                            AcceptanceCriteria = UserStoriesDescriptions.acceptanceCriteria.ToString()
+                            Preconditions = preconditions,
+                            AcceptanceCriteria = AccCrieteria
                         });
                     }
 
