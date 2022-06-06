@@ -124,7 +124,7 @@ namespace BAIA.Controllers
 
                     List<UserStory> US = new List<UserStory>();
 
-                    string preconditions = null;
+                    string preconditions = " ";
                     int i = 1;
                     foreach (var pr in UserStoriesDescriptions.preconditions)
                     {
@@ -136,7 +136,7 @@ namespace BAIA.Controllers
                         i++;
                     }
 
-                    string AccCrieteria = null;
+                    string AccCrieteria = " ";
                     i = 1;
                     foreach (var ac in UserStoriesDescriptions.acceptanceCriteria)
                     {
