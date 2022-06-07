@@ -74,13 +74,27 @@ namespace BAIA.Controllers
             try
             {
 
-                /*List<UserStory> userStories = new List<UserStory>();
+                List<UserStory> userStories = new List<UserStory>();
                 foreach (var m in project.Meetings)
                 {
-                    userStories.AddRange(m.UserStories);
-                }*/
+                    if (m.UserStories.Count == 0)
+                        continue;
+                    foreach (var us in m.UserStories)
+                    {
+                        UserStory userStory = new UserStory();
+                        userStory.UserStoryID = us.UserStoryID;
+                        userStory.UserStoryDescription = us.UserStoryDescription;
+                        userStory.UserStoryTitle = us.UserStoryTitle;
+                        userStory.Preconditions = us.AcceptanceCriteria;
+                        userStory.AcceptanceCriteria = us.AcceptanceCriteria;
+                        userStory.BusinessLogicFlow = us.BusinessLogicFlow;
 
-                return project.Meetings.SelectMany(us => us.UserStories).ToList();
+                        userStories.Add(userStory);
+                    }
+                }
+
+
+                return userStories;
 
             }
             catch (Exception ex)
