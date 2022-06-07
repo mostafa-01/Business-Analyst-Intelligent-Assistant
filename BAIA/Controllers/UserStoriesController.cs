@@ -28,14 +28,18 @@ namespace BAIA.Controllers
         }
 
         // GET: api/UserStories
-        [HttpGet]
+        [Route("api/UserStories/GetAllUserStories")]
+        [HttpGet("GetAllUserStories")]
+        [EnableCors]
         public async Task<ActionResult<IEnumerable<UserStory>>> GetUserStories()
         {
             return await _context.UserStories.ToListAsync();
         }
 
         // GET: api/UserStories/5
-        [HttpGet("{id}")]
+        [Route("api/UserStories/GetUserStory")]
+        [HttpGet("GetUserStory/{id}")]
+        [EnableCors]
         public async Task<ActionResult<UserStory>> GetUserStory(int id)
         {
             var userStory = await _context.UserStories.FindAsync(id);
@@ -70,14 +74,13 @@ namespace BAIA.Controllers
             try
             {
 
-                List<UserStory> userStories = new List<UserStory>();
+                /*List<UserStory> userStories = new List<UserStory>();
                 foreach (var m in project.Meetings)
                 {
                     userStories.AddRange(m.UserStories);
-                }
+                }*/
 
-                //project.Meetings.SelectMany(us => us.UserStories).ToList();
-                return userStories;
+                return project.Meetings.SelectMany(us => us.UserStories).ToList();
 
             }
             catch (Exception ex)
@@ -195,7 +198,9 @@ namespace BAIA.Controllers
 
         // PUT: api/UserStories/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [Route("api/UserStories/UpdateUserStory")]
+        [HttpPut("UpdateUserStory/{id}")]
+        [EnableCors]
         public async Task<IActionResult> PutUserStory(int id, UserStory userStory)
         {
             if (id != userStory.UserStoryID)
@@ -227,18 +232,23 @@ namespace BAIA.Controllers
 
         // POST: api/UserStories
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [Route("api/UserStories/PostUserStory")]
+        [HttpPost("PostUserStory")]
         [EnableCors]
-        public async Task<ActionResult<UserStory>> PostUserStory(UserStory userStory)
+        public async Task<ActionResult<UserStory>> PostUserStory([FromBody]AddUserStoryModel model)
         {
-            _context.UserStories.Add(userStory);
+            var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == model.meetingID);
+            model.userStory.Meeting = meeting;
+            _context.UserStories.Add(model.userStory);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUserStory", new { id = userStory.UserStoryID }, userStory);
+            return CreatedAtAction("GetUserStory", new { id = model.userStory.UserStoryID }, model.userStory);
         }
 
         // DELETE: api/UserStories/5
-        [HttpDelete("{id}")]
+        [Route("api/UserStories/DeleteUserStory")]
+        [HttpDelete("DeleteUserStory/{id}")]
+        [EnableCors]
         public async Task<IActionResult> DeleteUserStory(int id)
         {
             var userStory = await _context.UserStories.FindAsync(id);
