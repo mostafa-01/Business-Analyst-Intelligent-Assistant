@@ -67,8 +67,8 @@ namespace BAIA.Controllers
                 return StatusCode(204 , "Project not found");
 
             try{
-
-                return Ok(project.Meetings.SelectMany(us => us.UserStories).ToList());
+                List<UserStory> userStory = project.Meetings.SelectMany(us => us.UserStories).ToList();
+                return userStory;
 
             }catch(Exception ex)
             {
