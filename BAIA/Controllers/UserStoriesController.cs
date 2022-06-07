@@ -103,6 +103,12 @@ namespace BAIA.Controllers
             {
                 try
                 {
+                    var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == model.MeetingID);
+                    if (meeting == null)
+                    {
+                        return NoContent();
+                    }
+
                     var services = pj.Meetings.SelectMany(s => s.Services).ToList();
                     var selectedService = services.FirstOrDefault(s => s.ServiceID == model.ServiceID);
 
@@ -160,7 +166,8 @@ namespace BAIA.Controllers
                             UserStoryTitle = selectedService.ServiceTitle,
                             UserStoryDescription = us,
                             Preconditions = preconditions,
-                            AcceptanceCriteria = AccCrieteria
+                            AcceptanceCriteria = AccCrieteria,
+                            Meeting=meeting
                         });
                     }
 
