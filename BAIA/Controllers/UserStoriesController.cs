@@ -58,19 +58,29 @@ namespace BAIA.Controllers
         [EnableCors]
         public async Task<ActionResult<List<UserStory>>> getProjectUserStories(int id)
         {
+
             Project project = await _context.Projects
                 .Include(m => m.Meetings)
                 .ThenInclude(us => us.UserStories)
                 .FirstOrDefaultAsync(p => p.ProjectID == id);
-            
+
             if (project == null)
-                return StatusCode(204 , "Project not found");
+                return StatusCode(204, "Project not found");
 
-            try{
-                List<UserStory> userStory = project.Meetings.SelectMany(us => us.UserStories).ToList();
-                return userStory;
+            try
+            {
 
-            }catch(Exception ex)
+                List<UserStory> userStories = new List<UserStory>();
+                foreach (var m in project.Meetings)
+                {
+                    userStories.AddRange(m.UserStories);
+                }
+
+                //project.Meetings.SelectMany(us => us.UserStories).ToList();
+                return userStories;
+
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
@@ -90,7 +100,7 @@ namespace BAIA.Controllers
         [EnableCors]
         public async Task<ActionResult> GenerateUS([FromBody] GenerateUSModel model)
         {
-            Project pj =await _context.Projects
+            Project pj = await _context.Projects
                 .Include(m => m.Meetings)
                 .ThenInclude(s => s.Services)
                 .ThenInclude(d => d.ServiceDetails)
@@ -124,7 +134,7 @@ namespace BAIA.Controllers
                     RestResponse response = await client.ExecuteAsync(request);
                     if (response.Content == null)
                         return NoContent();
-                    
+
                     var UserStoriesDescriptions = JsonConvert
                     .DeserializeObject<UserStoryResponseModel>(response.Content);
 
@@ -134,8 +144,8 @@ namespace BAIA.Controllers
                     int i = 1;
                     foreach (var pr in UserStoriesDescriptions.preconditions)
                     {
-                        if(UserStoriesDescriptions.preconditions.Count == i)
-                            preconditions +=pr;
+                        if (UserStoriesDescriptions.preconditions.Count == i)
+                            preconditions += pr;
                         else
                         {
                             preconditions += pr;
@@ -150,7 +160,7 @@ namespace BAIA.Controllers
                     foreach (var ac in UserStoriesDescriptions.acceptanceCriteria)
                     {
                         if (UserStoriesDescriptions.preconditions.Count == i)
-                            AccCrieteria+= ac;
+                            AccCrieteria += ac;
                         else
                         {
                             AccCrieteria += ac;
@@ -162,19 +172,21 @@ namespace BAIA.Controllers
 
                     foreach (var us in UserStoriesDescriptions.stories)
                     {
-                        US.Add(new UserStory{
+                        US.Add(new UserStory
+                        {
                             UserStoryTitle = selectedService.ServiceTitle,
                             UserStoryDescription = us,
                             Preconditions = preconditions,
                             AcceptanceCriteria = AccCrieteria,
-                            Meeting=meeting
+                            Meeting = meeting
                         });
                     }
 
                     _context.UserStories.AddRange(US);
                     await _context.SaveChangesAsync();
                     return Ok();
-                }catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     return StatusCode(500, e.Message);
                 }
