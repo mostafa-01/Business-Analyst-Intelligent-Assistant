@@ -66,14 +66,30 @@ namespace BAIA.Controllers
             Project project = await _context.Projects
                 .Include(m => m.UserStories)
                 .FirstOrDefaultAsync(p => p.ProjectID == id);
-
+            List<UserStory> userStories = new List<UserStory>();
             if (project == null)
                 return StatusCode(204, "Project not found");
 
             try
             {
+                if (project.UserStories.Count == 0)
+                    return BadRequest();
+                foreach (var us in project.UserStories)
+                {
+                    UserStory userStory = new UserStory();
+                    userStory.UserStoryID = us.UserStoryID;
+                    userStory.UserStoryDescription = us.UserStoryDescription;
+                    userStory.UserStoryTitle = us.UserStoryTitle;
+                    userStory.Preconditions = us.AcceptanceCriteria;
+                    userStory.AcceptanceCriteria = us.AcceptanceCriteria;
+                    userStory.BusinessLogicFlow = us.BusinessLogicFlow;
 
-                return Ok(project.UserStories.ToList());
+                    userStories.Add(userStory);
+                }
+
+
+
+                return userStories;
 
             }
             catch (Exception ex)
@@ -228,7 +244,7 @@ namespace BAIA.Controllers
         [Route("api/UserStories/PostUserStory")]
         [HttpPost("PostUserStory")]
         [EnableCors]
-        public async Task<ActionResult<UserStory>> PostUserStory([FromBody]AddUserStoryModel model)
+        public async Task<ActionResult<UserStory>> PostUserStory([FromBody] AddUserStoryModel model)
         {
             model.userStory.Project = await _context.Projects.FirstOrDefaultAsync(p => p.ProjectID == model.projectID);
             _context.UserStories.Add(model.userStory);
