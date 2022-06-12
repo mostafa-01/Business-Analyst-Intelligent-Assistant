@@ -27,6 +27,8 @@ namespace BAIA.Models
 
         public virtual IList<Meeting> Meetings { get; set; }
 
+        public virtual IList<UserStory> UserStories { get; set; }
+
         public virtual User User { get; set; }
     }
 }

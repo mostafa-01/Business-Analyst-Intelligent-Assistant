@@ -64,8 +64,7 @@ namespace BAIA.Controllers
         {
 
             Project project = await _context.Projects
-                .Include(m => m.Meetings)
-                .ThenInclude(us => us.UserStories)
+                .Include(m => m.UserStories)
                 .FirstOrDefaultAsync(p => p.ProjectID == id);
 
             if (project == null)
@@ -74,27 +73,7 @@ namespace BAIA.Controllers
             try
             {
 
-                List<UserStory> userStories = new List<UserStory>();
-                foreach (var m in project.Meetings)
-                {
-                    if (m.UserStories.Count == 0)
-                        continue;
-                    foreach (var us in m.UserStories)
-                    {
-                        UserStory userStory = new UserStory();
-                        userStory.UserStoryID = us.UserStoryID;
-                        userStory.UserStoryDescription = us.UserStoryDescription;
-                        userStory.UserStoryTitle = us.UserStoryTitle;
-                        userStory.Preconditions = us.AcceptanceCriteria;
-                        userStory.AcceptanceCriteria = us.AcceptanceCriteria;
-                        userStory.BusinessLogicFlow = us.BusinessLogicFlow;
-
-                        userStories.Add(userStory);
-                    }
-                }
-
-
-                return userStories;
+                return Ok(project.UserStories.ToList());
 
             }
             catch (Exception ex)
@@ -195,7 +174,7 @@ namespace BAIA.Controllers
                             UserStoryDescription = us,
                             Preconditions = preconditions,
                             AcceptanceCriteria = AccCrieteria,
-                            Meeting = meeting
+                            Project = pj
                         });
                     }
 
@@ -251,8 +230,7 @@ namespace BAIA.Controllers
         [EnableCors]
         public async Task<ActionResult<UserStory>> PostUserStory([FromBody]AddUserStoryModel model)
         {
-            var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == model.meetingID);
-            model.userStory.Meeting = meeting;
+            model.userStory.Project = await _context.Projects.FirstOrDefaultAsync(p => p.ProjectID == model.projectID);
             _context.UserStories.Add(model.userStory);
             await _context.SaveChangesAsync();
 

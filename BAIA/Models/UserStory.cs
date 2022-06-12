@@ -23,6 +23,6 @@ namespace BAIA.Models
         public string BusinessLogicFlow { get; set; }
 
 
-        public virtual Meeting Meeting { get; set; }
+        public virtual Project Project { get; set; }
     }
 }

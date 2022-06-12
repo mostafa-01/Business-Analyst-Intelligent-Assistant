@@ -27,6 +27,5 @@ namespace BAIA.Models
 
         public virtual IList<Service> Services { get; set; }
 
-        public virtual IList<UserStory> UserStories { get; set; }
     }
 }

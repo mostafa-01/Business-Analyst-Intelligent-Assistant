@@ -41,86 +41,6 @@ namespace BAIA.Controllers
             return await _context.Meetings.ToListAsync();
         }
 
-        // GET: api/Meetings/GetASR-Text/1
-        // This API calls the ASR-Model to to generate the Transcript for Meeting with {id}
-        /*[Route("api/Meetings/GetASR-Text")]
-        [HttpGet("GetASR-Text/AudioReference")]
-        [EnableCors]
-        public async Task<ActionResult<string>> GetASRText(string AudioReference)
-        {
-            var client = new RestClient($"http://127.0.0.1:5000/");
-            var request = new RestRequest("meetingscript", Method.Post);
-            request.AddJsonBody(new {filepath = AudioReference});
-            RestResponse response = await client.ExecuteAsync(request);
-            if (response.Content == null)
-                return BadRequest();
-            return response.Content;
-        }*/
-
-        /*
-        //Get: api/Projects/GetMeetingAsIs/5
-        [Route("api/Meetings/GetMeetingAsIs")]
-        [HttpGet("GetMeetingAsIs/{id}")]
-        public async Task<ActionResult<Dictionary<string, List<string>>>> GetMeetingAsIs(int id)
-        {
-            var meeting = new Meeting();
-            meeting = await _context.Meetings
-                .Include(p => p.Services)
-                .ThenInclude(s => s.ServiceDetails)
-                .FirstOrDefaultAsync(x => x.MeetingID == id);
-            if (meeting == null)
-                return NoContent();
-            else
-            {
-                try
-                {
-                    
-                    List<string> Actors = meeting.Project.SystemActors.Split(',').ToList();
-                    var client = new RestClient($"http://127.0.0.1:5000/");
-                    var request = new RestRequest("services", Method.Post);
-                    request.AddJsonBody(new
-                    {
-                        meetingscript = meeting.ASR_Text,
-                        actors = Actors
-                    }) ;
-                    request.AddHeader("content-type", "application/json");
-                    var response = await client.ExecuteAsync(request);
-                    var content = response.Content;
-
-                    Dictionary<string, List<string>> ServicesDic = new Dictionary<string, List<string>>();
-
-                    ServicesDic = ToKeyValue(content);
-
-                    foreach(var keyval in ServicesDic)
-                    {
-                        meeting.Services.Add(new Service
-                        {
-                            ServiceTitle = keyval.Key,
-                            Meeting = meeting
-                        });
-                        var ser = meeting.Services.FirstOrDefault(x => x.ServiceTitle == keyval.Key);
-                        foreach (var val in keyval.Value)
-                        {
-                            ser.
-                                ServiceDetails.Add(new ServiceDetail
-                                {
-                                    ServiceDetailString = val,
-                                    Service = ser
-                                });
-                        }
-                    }
-                    await _context.SaveChangesAsync();
-                    return ServicesDic;
-                }
-                catch (Exception e)
-                {
-                    return Content(e.ToString() + StatusCode(500));
-                    //return StatusCode(500);
-                }
-            }
-        }
-        */
-
         // GET: api/Meetings/GetMeeting/1
         // This API gets data of a specific Meeting with {id}
         // It includes Services and Service Details
@@ -336,33 +256,7 @@ namespace BAIA.Controllers
 
                     return Ok();
 
-                    /*List<Service> myServices = new List<Service>();
-                    List<ServiceDetail> myDetails = new List<ServiceDetail>();
-                    foreach (var service in ServicesDic)
-                    {
-                        Service srvc = new Service
-                        {
-                            ServiceTitle = service.serviceTitle,
-                            Meeting = meeting
-                        };
-                        myServices.Add(srvc);
-                        srvc = myServices.FirstOrDefault(s => s.ServiceTitle.Equals(srvc.ServiceTitle));
-                        foreach (var srvcDetail in service.serviceDetails)
-                        {
-                            int tsNum = Int32.Parse(srvcDetail.Timestamp);
-                            TimeSpan t = TimeSpan.FromSeconds(tsNum);
-                            string ts = string.Format("{0:D2}:{1:D2}:{2:D2}",
-                                            t.Hours,
-                                            t.Minutes,
-                                            t.Seconds);
-                            srvcDetail.Timestamp = ts;
-                            srvcDetail.Service = srvc;
-                            myDetails.Add(srvcDetail);                        
-                        }
-                        _context.ServiceDetails.AddRange(myDetails);
-                        await _context.SaveChangesAsync();
-                    }*/
-
+                   
                 }
                 catch (Exception e)
                 {
@@ -370,38 +264,5 @@ namespace BAIA.Controllers
                 }
             }
         }
-
-        
-
-        /*private async Task<ActionResult<string>> GetASR_Text(string AudioReference, string ProjectTitle, string Domain,
-            string MeetingPersonnel, string MeetingTitle)
-        {
-            var client = new RestClient($"http://127.0.0.1:5000/");
-            var request = new RestRequest("meetingscript", Method.Post);
-            request.AddJsonBody(new
-            {
-                filepath = AudioReference,
-                projectTitle = ProjectTitle,
-                domain = Domain,
-                actors = MeetingPersonnel,
-                meetingTitle = MeetingTitle
-            });
-            RestResponse response = await client.ExecuteAsync(request);
-            if (response.Content == null)
-                return null;
-            else
-                return Content(response.Content);
-        }*/
-
-        /*private Dictionary<string, List<string>> ToKeyValue(string content)
-        {
-            
-
-            var values = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(content);
-
-
-
-            return values;
-        }*/
     }
 }

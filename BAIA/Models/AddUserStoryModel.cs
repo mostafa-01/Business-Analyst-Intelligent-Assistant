@@ -8,6 +8,6 @@ namespace BAIA.Models
     public class AddUserStoryModel
     {
         public UserStory userStory { get; set; }
-        public int meetingID { get; set; }
+        public int projectID { get; set; }
     }
 }

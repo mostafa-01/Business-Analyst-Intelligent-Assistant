@@ -91,9 +91,6 @@ namespace BAIA.Controllers
             {
                 try
                 {
-
-                    // Tuple<string, List<string>> listnode = new Tuple<string,List<string>>; 
-                    //Dictionary<string, List<string>> AsIs = new Dictionary<string, List<string>>();
                     List<AsIs> AsIs= new List<AsIs>();
                     foreach (Meeting M in project.Meetings)
                     {
@@ -146,8 +143,6 @@ namespace BAIA.Controllers
 
             return project;
         }
-
-
         // GET: api/Projects/GetProjectByTitle/Facebook
         // This API returns Project with specific {title} including it's Meetings
         [Route("api/Projects/GetProjectByTitle")]
@@ -217,12 +212,12 @@ namespace BAIA.Controllers
         [EnableCors]
         public async Task<ActionResult<Project>> PostProject([FromBody] AddProjectModel model)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserID == model.UserID);
+            var user = await _context.Users.Include(p => p.Projects).FirstOrDefaultAsync(x => x.UserID == model.UserID);
             if (user == null)
             {
                 return NotFound();
             }
-            var project = await _context.Projects.FirstOrDefaultAsync(p => p.ProjectTitle == model.Project.ProjectTitle);
+            var project =  user.Projects.FirstOrDefault(p => p.ProjectTitle == model.Project.ProjectTitle);
             if (project != null)
             {
                 return BadRequest();
@@ -236,8 +231,7 @@ namespace BAIA.Controllers
             }
             catch (Exception e)
             {
-                Console.Out.WriteLine(e.ToString());
-                return StatusCode(500);
+                return StatusCode(500,e.Message);
             }
 
             return CreatedAtAction("GetProject", new { id = model.Project.ProjectID }, model.Project);
@@ -275,7 +269,6 @@ namespace BAIA.Controllers
         [EnableCors]
         public async Task<ActionResult<Project>> DetectConflicts([FromBody]DetectConflictsModel model)
         {
-            //var meeting = await _context.Meetings.FirstOrDefaultAsync(x => x.MeetingID == model.MeetingID);
             Project project = await _context.Projects
                 .Include(p => p.Meetings)
                 .ThenInclude(m => m.Services)
