@@ -45,8 +45,8 @@ namespace BAIA.Data
 
 
             modelBuilder.Entity<UserStory>()
-                .HasOne(us => us.Meeting)
-                .WithMany(m => m.UserStories)
+                .HasOne(us => us.Project)
+                .WithMany(p => p.UserStories)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ServiceDetail>()
