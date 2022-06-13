@@ -80,7 +80,7 @@ namespace BAIA.Controllers
                     userStory.UserStoryID = us.UserStoryID;
                     userStory.UserStoryDescription = us.UserStoryDescription;
                     userStory.UserStoryTitle = us.UserStoryTitle;
-                    userStory.Preconditions = us.AcceptanceCriteria;
+                    userStory.Preconditions = us.Preconditions;
                     userStory.AcceptanceCriteria = us.AcceptanceCriteria;
                     userStory.BusinessLogicFlow = us.BusinessLogicFlow;
 
