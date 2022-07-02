@@ -12,7 +12,7 @@ namespace BAIA.Data
         {
             //context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
-            if (context.Users.Any())
+            /*if (context.Users.Any())
             {
                 return;   // DB has been seeded
             }
@@ -111,7 +111,8 @@ namespace BAIA.Data
             {
                 context.ServiceDetails.Add(sd);
             }
-            context.SaveChanges();
+            context.SaveChanges();*/
+
             /*var userStories = new UserStory[]
             {
                 new UserStory{UserStoryTitle="First User Story",UserStoryDescription="As a supply planner, I need the ability to plan dependent forecasted items as independent SKUs, so that I can include those items in my MSP / distribution requirements plan.I will know it’s achieved when I can pull in demand forecast of a parent SKU, identify the bill of materials, andcreate a sourcing plan for dependent SKUs.....",
